@@ -1,37 +1,39 @@
+
 import numpy as np
 import pandas as pd
 
+# Score gratuito v2:
+# fundamentos oficiais CVM + market cap/setor do catálogo público + preços yfinance.
+# Evita endpoints pagos de statistics/financial-data da brapi.
+
 GENERAL_POSITIVE = {
-    "quality": ["roe", "operating_margin", "profit_margin", "fcf_margin"],
+    "quality": ["roe", "operating_margin", "profit_margin"],
     "growth": ["revenue_growth", "earnings_growth"],
-    "valuation": ["fcf_yield"],
+    "valuation": ["earnings_yield", "book_to_price", "sales_yield"],
     "momentum": ["ret_3m", "ret_6m", "ret_12m", "price_to_ma50", "price_to_ma200"],
     "risk": [],
 }
 GENERAL_NEGATIVE = {
-    "quality": ["debt_to_ebitda"],
+    "quality": ["debt_to_equity"],
     "growth": [],
-    "valuation": ["pe", "pb", "ev_ebitda"],
+    "valuation": ["ev_to_ebit"],
     "momentum": [],
-    "risk": ["volatility", "beta"],
+    "risk": ["volatility"],
 }
 
-# Bancos/seguradoras não devem ser tratados como indústria comum:
-# dívida e EV/EBITDA têm interpretação distinta. Nesta primeira versão,
-# priorizamos ROE, lucro/crescimento, P/L e P/VP.
 FIN_POSITIVE = {
     "quality": ["roe", "profit_margin"],
-    "growth": ["revenue_growth", "earnings_growth"],
-    "valuation": [],
+    "growth": ["earnings_growth"],
+    "valuation": ["earnings_yield", "book_to_price"],
     "momentum": ["ret_3m", "ret_6m", "ret_12m", "price_to_ma50", "price_to_ma200"],
     "risk": [],
 }
 FIN_NEGATIVE = {
     "quality": [],
     "growth": [],
-    "valuation": ["pe", "pb"],
+    "valuation": [],
     "momentum": [],
-    "risk": ["volatility", "beta"],
+    "risk": ["volatility"],
 }
 
 
@@ -52,6 +54,7 @@ def _group_percentile(df, field, positive=True, min_sector_size=5):
     sector = df["sector"].fillna("Unknown")
     out = pd.Series(index=df.index, dtype=float)
     global_rank = _percentile(values, positive)
+
     for _, idx in df.groupby(sector).groups.items():
         idx = list(idx)
         valid = values.loc[idx].notna().sum()
@@ -66,44 +69,87 @@ def _score_subset(out, mask, pos_map, neg_map, min_sector_size):
     sub = out.loc[mask].copy()
     if sub.empty:
         return out
+
     for component in ["quality", "growth", "valuation", "momentum", "risk"]:
         cols = []
+
         for f in pos_map[component]:
+            if f not in sub.columns:
+                continue
             c = f"__{component}_{f}"
             sub[c] = _group_percentile(sub, f, True, min_sector_size)
             cols.append(c)
+
         for f in neg_map[component]:
+            if f not in sub.columns:
+                continue
             c = f"__{component}_{f}"
             sub[c] = _group_percentile(sub, f, False, min_sector_size)
             cols.append(c)
-        if component == "risk":
+
+        if component == "risk" and "max_drawdown" in sub.columns:
             c = "__risk_max_drawdown"
             sub[c] = _group_percentile(sub, "max_drawdown", True, min_sector_size)
             cols.append(c)
+
         sub[f"{component}_score"] = sub[cols].mean(axis=1, skipna=True) if cols else np.nan
         sub[f"{component}_coverage"] = sub[cols].notna().mean(axis=1) if cols else 0.0
+
     for c in sub.columns:
         if c not in out.columns:
             out[c] = np.nan
+
     out.loc[sub.index, sub.columns] = sub
     return out
 
 
 def score_dataframe(df, weights, min_coverage=0.65, min_sector_size=5):
     out = df.copy()
-    out["model_group"] = out.apply(lambda r: "financial" if _is_financial(r) else "general", axis=1)
-    out = _score_subset(out, out["model_group"].eq("general"), GENERAL_POSITIVE, GENERAL_NEGATIVE, min_sector_size)
-    out = _score_subset(out, out["model_group"].eq("financial"), FIN_POSITIVE, FIN_NEGATIVE, min_sector_size)
+
+    out["model_group"] = out.apply(
+        lambda r: "financial" if _is_financial(r) else "general",
+        axis=1,
+    )
+
+    out = _score_subset(
+        out,
+        out["model_group"].eq("general"),
+        GENERAL_POSITIVE,
+        GENERAL_NEGATIVE,
+        min_sector_size,
+    )
+
+    out = _score_subset(
+        out,
+        out["model_group"].eq("financial"),
+        FIN_POSITIVE,
+        FIN_NEGATIVE,
+        min_sector_size,
+    )
 
     weighted_cols = []
+
     for component, w in weights.items():
         c = f"__weighted_{component}"
         out[c] = out[f"{component}_score"] * float(w)
         weighted_cols.append(c)
-    out["score"] = out[weighted_cols].sum(axis=1, min_count=1)
+
+    # Repondera pelos componentes realmente disponíveis, para não punir
+    # empresas só porque uma métrica específica não existe no template CVM.
+    numerator = out[weighted_cols].sum(axis=1, min_count=1)
+    available_weight = pd.Series(0.0, index=out.index)
+
+    for component, w in weights.items():
+        available_weight += out[f"{component}_score"].notna().astype(float) * float(w)
+
+    out["score"] = numerator / available_weight.replace(0, np.nan)
+
     coverage_cols = [f"{x}_coverage" for x in weights]
     out["data_coverage"] = out[coverage_cols].mean(axis=1)
+
     out.loc[out["data_coverage"] < min_coverage, "score"] = np.minimum(
-        out.loc[out["data_coverage"] < min_coverage, "score"], 69.99
+        out.loc[out["data_coverage"] < min_coverage, "score"],
+        69.99,
     )
+
     return out
