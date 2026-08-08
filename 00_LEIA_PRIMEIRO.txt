@@ -1,0 +1,26 @@
+B3 AI — PACOTE PRONTO PARA GITHUB
+=================================
+
+1. NÃO envie este ZIP fechado para o GitHub.
+2. Extraia o ZIP.
+3. Abra a pasta extraída B3_AI_GITHUB_UPLOAD_READY.
+4. Dentro dela, pressione Ctrl+A.
+5. Arraste TODO O CONTEÚDO para GitHub > Code > Add file > Upload files.
+6. Na tela do GitHub, os nomes devem começar diretamente por:
+   .github/workflows/...
+   src/...
+   config.yaml
+   streamlit_app.py
+   requirements.txt
+   etc.
+   NÃO deve aparecer B3_AI_GITHUB_UPLOAD_READY/ antes dos nomes.
+7. Clique em Commit changes.
+8. Vá em Actions e execute primeiro: "00 - First setup test".
+9. Se ficar verde, execute: "Weekly fundamentals refresh".
+
+O BRAPI_TOKEN deve estar em:
+Settings > Secrets and variables > Actions > Repository secrets
+com o nome exato BRAPI_TOKEN.
+
+Telegram pode ficar para depois. Os scripts não falham se os secrets do Telegram
+não estiverem configurados.

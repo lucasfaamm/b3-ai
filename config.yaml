@@ -1,0 +1,32 @@
+universe:
+  min_price_brl: 2.0
+  min_market_cap_brl: 300000000
+  min_avg_daily_volume_brl: 1000000
+  min_history_days: 200
+
+score:
+  weights:
+    quality: 0.25
+    growth: 0.20
+    valuation: 0.20
+    momentum: 0.20
+    risk: 0.15
+  min_data_coverage: 0.65
+  min_sector_size: 5
+
+signals:
+  exceptional: 85
+  strong: 80
+  watch: 70
+  neutral: 60
+  max_position_pct_default: 5.0
+
+runtime:
+  price_period: "1y"
+  price_batch_size: 40
+  request_pause_seconds: 0.15
+  top_n_report: 30
+  intraday_top_n: 20
+  # Protege o plano gratuito da brapi. Se a lista for maior, o refresh semanal
+  # limita o universo fundamentalista; depois podemos trocar por CVM 100% bulk.
+  max_fundamental_tickers: 500

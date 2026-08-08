@@ -1,0 +1,7 @@
+pandas>=2.2,<3
+numpy>=1.26,<3
+requests>=2.32,<3
+python-dotenv>=1.0,<2
+PyYAML>=6.0,<7
+streamlit>=1.40,<2
+yfinance>=0.2.65,<1
