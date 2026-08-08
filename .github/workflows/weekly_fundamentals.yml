@@ -3,17 +3,26 @@ name: Weekly fundamentals refresh
 on:
   schedule:
     - cron: "0 12 * * 0"
+
   workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: b3-data-write
+  cancel-in-progress: false
+
 jobs:
+
   refresh:
+
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+
+    timeout-minutes: 60
 
     steps:
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
@@ -22,20 +31,25 @@ jobs:
 
       - run: pip install -r requirements.txt
 
+      - name: Project health check
+        run: python health_check.py
+
       - name: Refresh fundamentals
         env:
           BRAPI_TOKEN: ${{ secrets.BRAPI_TOKEN }}
         run: python refresh_fundamentals.py
 
       - name: Refresh ranking
-        env:
-          BRAPI_TOKEN: ${{ secrets.BRAPI_TOKEN }}
         run: python refresh_ranking.py
 
-      - name: Save results
+      - name: Commit cache/results
         run: |
           git config user.name "b3-ai-bot"
           git config user.email "b3-ai-bot@users.noreply.github.com"
-          git add data results || true
-          git diff --cached --quiet || git commit -m "Update fundamentals"
+
+          git add data/fundamentals.csv results/
+
+          git diff --cached --quiet || \
+          git commit -m "Weekly fundamentals refresh"
+
           git push
