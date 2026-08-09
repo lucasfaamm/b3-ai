@@ -1,4 +1,3 @@
-
 name: 02 - Benchmark calibrate final signals
 
 on:
@@ -9,10 +8,14 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: b3-validated-research
+  cancel-in-progress: false
+
 jobs:
   research:
     runs-on: ubuntu-latest
-    timeout-minutes: 70
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -22,14 +25,14 @@ jobs:
       - run: pip install vectorbt
       - name: Benchmark VectorBT vs IBOV and CDI
         run: python benchmark_vectorbt.py
-      - name: Fundamental point-in-time backtest and calibration
+      - name: Correct PIT TTM backtest and calibrate weights
         run: python fundamental_backtest_calibrate.py
-      - name: Generate final signals
+      - name: Generate final validated signals
         run: python generate_final_signals.py
-      - name: Commit research
+      - name: Commit validated research
         run: |
           git config user.name "b3-ai-bot"
           git config user.email "b3-ai-bot@users.noreply.github.com"
           git add results/
-          git diff --cached --quiet || git commit -m "Update validated research and final signals"
+          git diff --cached --quiet || git commit -m "Update validated PIT research and signals"
           git push
