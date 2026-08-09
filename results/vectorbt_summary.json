@@ -1,0 +1,25 @@
+{
+  "engine": "vectorbt",
+  "universe_size": 115,
+  "history_start": "2021-08-09",
+  "history_end": "2026-08-07",
+  "train_test_split": "2024-11-04",
+  "selection_rule": "Parâmetros escolhidos somente pelo Sharpe no treino; métricas seguintes são do período fora da amostra.",
+  "best_parameters": {
+    "fast_ma": 20,
+    "slow_ma": 200,
+    "momentum_days": 252
+  },
+  "out_of_sample": {
+    "cagr": 0.05084480694274984,
+    "sharpe_rf0": 0.5230146314974566,
+    "max_drawdown": -0.10594554283258595,
+    "total_return": 0.08980961925100472
+  },
+  "limitations": [
+    "Valida somente camada técnica/preço.",
+    "Universo usa empresas atuais: existe survivorship bias.",
+    "Não substitui backtest fundamentalista point-in-time.",
+    "Custos simulados: 0,05% taxa + 0,05% slippage por operação."
+  ]
+}
