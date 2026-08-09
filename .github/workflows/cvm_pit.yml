@@ -1,0 +1,32 @@
+
+name: 01 - Build CVM PIT database
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 10 1 */3 *"
+
+permissions:
+  contents: write
+
+jobs:
+  cvm_pit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Build point-in-time CVM database
+        env:
+          BRAPI_TOKEN: ${{ secrets.BRAPI_TOKEN }}
+        run: python build_cvm_pit.py
+      - name: Commit PIT cache
+        run: |
+          git config user.name "b3-ai-bot"
+          git config user.email "b3-ai-bot@users.noreply.github.com"
+          git add data/ticker_cnpj.csv data/cvm_pit_fundamentals.csv.gz results/cvm_pit_status.json results/ticker_cnpj_errors.csv
+          git diff --cached --quiet || git commit -m "Update CVM PIT database"
+          git push

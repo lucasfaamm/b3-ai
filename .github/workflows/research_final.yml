@@ -1,0 +1,35 @@
+
+name: 02 - Benchmark calibrate final signals
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 12 2 * *"
+
+permissions:
+  contents: write
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: pip install vectorbt
+      - name: Benchmark VectorBT vs IBOV and CDI
+        run: python benchmark_vectorbt.py
+      - name: Fundamental point-in-time backtest and calibration
+        run: python fundamental_backtest_calibrate.py
+      - name: Generate final signals
+        run: python generate_final_signals.py
+      - name: Commit research
+        run: |
+          git config user.name "b3-ai-bot"
+          git config user.email "b3-ai-bot@users.noreply.github.com"
+          git add results/
+          git diff --cached --quiet || git commit -m "Update validated research and final signals"
+          git push
