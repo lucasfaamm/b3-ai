@@ -1,0 +1,20 @@
+{
+  "updated_at": "2026-08-09T20:39:33.416796+00:00",
+  "universe_total": 2212,
+  "ranked_total": 689,
+  "by_class": {
+    "FII": 239,
+    "AÇÃO B3": 166,
+    "AÇÃO GLOBAL / BDR": 120,
+    "ETF": 113,
+    "FIAGRO": 31,
+    "FI-INFRA": 10,
+    "FIP": 9,
+    "FIDC": 1
+  },
+  "brasil_regime": "RISK_OFF",
+  "global_regime": "RISK_ON",
+  "fixed_income_excluded": true,
+  "bdr_deep_fundamentals_requested": 80,
+  "note": "Opportunity scores are evidence/ranking scores, not probabilities of profit."
+}

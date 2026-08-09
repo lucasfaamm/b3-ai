@@ -1,0 +1,17 @@
+{
+  "system": "NUBANK GLOBAL OPPORTUNITY RADAR",
+  "scope": [
+    "Ações B3",
+    "Ações globais via BDR",
+    "ETFs",
+    "FIIs",
+    "FI-Infra",
+    "FIAGRO",
+    "FIP",
+    "FIDC"
+  ],
+  "fixed_income": false,
+  "portfolio_aware": true,
+  "forward_validation": "monthly Top10/class, 20 trading days",
+  "global_score": "normalized within asset class before cross-class comparison"
+}
