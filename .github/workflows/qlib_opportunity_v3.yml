@@ -1,0 +1,43 @@
+
+name: Qlib Opportunity Classifier V3
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 15 * * 0"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: b3-research-qlib-v3
+  cancel-in-progress: false
+
+jobs:
+  classifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install project
+        run: pip install -r requirements.txt
+
+      - name: Install Qlib
+        run: pip install pyqlib
+
+      - name: Run opportunity classifier
+        run: python qlib_opportunity_v3.py
+
+      - name: Commit V3 research
+        run: |
+          git config user.name "b3-ai-bot"
+          git config user.email "b3-ai-bot@users.noreply.github.com"
+          git add results/qlib_v3_*.csv results/qlib_v3_summary.json
+          git diff --cached --quiet || git commit -m "Update Qlib Opportunity V3"
+          git push
