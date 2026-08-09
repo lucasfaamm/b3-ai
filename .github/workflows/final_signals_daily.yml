@@ -1,4 +1,3 @@
-
 name: Final signals daily
 
 on:
@@ -12,19 +11,19 @@ permissions:
 jobs:
   signals:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - name: Generate final signals from latest ranking
+      - name: Generate current validated signals
         run: python generate_final_signals.py
       - name: Commit final signals
         run: |
           git config user.name "b3-ai-bot"
           git config user.email "b3-ai-bot@users.noreply.github.com"
           git add results/final_signals.csv results/final_opportunities.csv results/final_signal_status.json
-          git diff --cached --quiet || git commit -m "Update final signals"
+          git diff --cached --quiet || git commit -m "Update final validated signals"
           git push
