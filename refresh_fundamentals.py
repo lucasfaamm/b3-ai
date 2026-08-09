@@ -7,7 +7,6 @@ from pathlib import Path
 from zipfile import ZipFile
 import json
 import re
-import unicodedata
 
 import numpy as np
 import pandas as pd
@@ -24,11 +23,7 @@ def digits(x):
 
 
 def num(x):
-    if x is None:
-        return np.nan
     try:
-        if isinstance(x, str):
-            x = x.strip().replace(".", "").replace(",", ".") if "," in x else x.strip()
         return float(x)
     except Exception:
         return np.nan
@@ -49,7 +44,6 @@ def pct_growth(cur, prev):
         prev = float(prev)
         if not np.isfinite(cur) or not np.isfinite(prev) or prev == 0:
             return np.nan
-        # Denominador absoluto evita inversão artificial quando o ano anterior foi negativo.
         return (cur - prev) / abs(prev)
     except Exception:
         return np.nan
@@ -60,7 +54,7 @@ def download_zip(url):
     r = requests.get(
         url,
         timeout=120,
-        headers={"User-Agent": "b3-ai-personal-radar/1.0"},
+        headers={"User-Agent": "b3-ai-personal-radar/1.1"},
     )
     r.raise_for_status()
     return ZipFile(BytesIO(r.content))
@@ -71,7 +65,6 @@ def read_member(zf, needle):
     if not names:
         return pd.DataFrame()
     with zf.open(names[0]) as fh:
-        # Arquivos CVM são CSV separados por ;. latin1 é tolerante às versões históricas.
         return pd.read_csv(fh, sep=";", encoding="latin1", low_memory=False)
 
 
@@ -92,12 +85,21 @@ def prepare_statement(df):
 
     if "VL_CONTA" in x.columns:
         s = x["VL_CONTA"].astype(str).str.strip()
-        # CVM normalmente usa ponto decimal; também tolera vírgula decimal.
         comma = s.str.contains(",", regex=False)
-        s.loc[comma] = s.loc[comma].str.replace(".", "", regex=False).str.replace(",", ".", regex=False)
+        s.loc[comma] = (
+            s.loc[comma]
+            .str.replace(".", "", regex=False)
+            .str.replace(",", ".", regex=False)
+        )
         x["VL_NUM"] = pd.to_numeric(s, errors="coerce")
 
-    # Reapresentações: mantém a versão mais alta para cada conta.
+        # CRÍTICO: normaliza todos os demonstrativos para REAIS.
+        # A CVM frequentemente publica VL_CONTA com ESCALA_MOEDA="MIL".
+        if "ESCALA_MOEDA" in x.columns:
+            escala = x["ESCALA_MOEDA"].astype(str).str.upper().str.strip()
+            is_mil = escala.str.contains(r"\bMIL\b", regex=True, na=False)
+            x.loc[is_mil, "VL_NUM"] = x.loc[is_mil, "VL_NUM"] * 1000.0
+
     sort_cols = [c for c in ["CNPJ_NORM", "DT_REFER", "CD_CONTA", "VERSAO"] if c in x.columns]
     if sort_cols:
         x = x.sort_values(sort_cols)
@@ -130,8 +132,8 @@ def account_map(df, code):
         return {}
     return (
         z.dropna(subset=["CNPJ_NORM"])
-         .set_index("CNPJ_NORM")["VL_NUM"]
-         .to_dict()
+        .set_index("CNPJ_NORM")["VL_NUM"]
+        .to_dict()
     )
 
 
@@ -142,11 +144,9 @@ def load_dfp_year(year):
     bpa = combine_con_ind(zf, "BPA", year)
     bpp = combine_con_ind(zf, "BPP", year)
 
-    # Contas padronizadas CVM.
     revenue = account_map(dre, "3.01")
     op_income = account_map(dre, "3.05")
 
-    # Lucro atribuível aos controladores quando disponível; senão lucro consolidado/período.
     net_parent = account_map(dre, "3.11.01")
     net_total = account_map(dre, "3.11")
 
@@ -189,14 +189,13 @@ workers = int(cfg["runtime"].get("fundamental_workers", 4))
 pause = float(cfg["runtime"].get("request_pause_seconds", 0.10))
 
 client = BrapiClient(pause=pause, max_retries=4)
-
-# /tickers é endpoint público e já traz setor, preço, volume e market cap.
 items = client.tickers(limit=2000)
 
 universe = []
 for item in items:
     if not isinstance(item, dict):
         continue
+
     symbol = str(item.get("symbol", "")).upper().strip()
     if not symbol or not item.get("isActive", True):
         continue
@@ -217,13 +216,11 @@ for item in items:
     })
 
 universe = universe[:limit]
+
 if not universe:
-    raise SystemExit("Não foi possível montar o universo B3 pelo endpoint público /tickers.")
+    raise SystemExit("Não foi possível montar o universo B3.")
 
-print(f"[INFO] universo: {len(universe)} ativos", flush=True)
 
-# CNPJ vem do endpoint de perfil. No seu teste ele foi acessível;
-# se algum ticker falhar, ele é apenas marcado para revisão.
 def profile_one(row):
     c = BrapiClient(pause=pause, max_retries=3)
     p = c.profile(row["ticker"])
@@ -233,6 +230,7 @@ def profile_one(row):
         "sector": p.get("sector") or p.get("sectorDisp") or row["sector_catalog"],
         "industry": p.get("industry") or p.get("industryDisp") or row["subsector_catalog"],
     }
+
 
 profiles = []
 profile_errors = []
@@ -248,10 +246,7 @@ with ThreadPoolExecutor(max_workers=workers) as ex:
             profile_errors.append({"ticker": ticker, "error": str(e)})
             print(f"[PROFILE {i}/{len(universe)}] ERRO {ticker}: {e}", flush=True)
 
-if not profiles:
-    raise SystemExit("Nenhum perfil/CNPJ foi obtido. Não é possível cruzar com a CVM.")
 
-# Últimos dois exercícios anuais completos.
 current_year = int(pd.Timestamp.utcnow().year) - 1
 previous_year = current_year - 1
 
@@ -282,12 +277,20 @@ for r in profiles:
     prev_ni = b.get("net_income", np.nan) if b else np.nan
 
     net_debt = debt - cash if not pd.isna(debt) and not pd.isna(cash) else np.nan
-    enterprise_value = market_cap + net_debt if not pd.isna(market_cap) and not pd.isna(net_debt) else np.nan
+    enterprise_value = (
+        market_cap + net_debt
+        if not pd.isna(market_cap) and not pd.isna(net_debt)
+        else np.nan
+    )
 
     earnings_yield = safe_div(net_income, market_cap)
     book_to_price = safe_div(equity, market_cap)
     sales_yield = safe_div(revenue, market_cap)
-    ev_to_ebit = safe_div(enterprise_value, op_income) if not pd.isna(op_income) and op_income > 0 else np.nan
+    ev_to_ebit = (
+        safe_div(enterprise_value, op_income)
+        if not pd.isna(op_income) and op_income > 0
+        else np.nan
+    )
 
     pe = safe_div(1.0, earnings_yield) if not pd.isna(earnings_yield) and earnings_yield > 0 else np.nan
     pb = safe_div(1.0, book_to_price) if not pd.isna(book_to_price) and book_to_price > 0 else np.nan
@@ -299,43 +302,37 @@ for r in profiles:
         "sector": r["sector"],
         "industry": r["industry"],
         "market_cap": market_cap,
-
         "revenue": revenue,
         "operating_income": op_income,
         "net_income": net_income,
         "equity": equity,
         "total_cash": cash,
         "total_debt": debt,
-
         "roe": safe_div(net_income, equity),
         "operating_margin": safe_div(op_income, revenue),
         "profit_margin": safe_div(net_income, revenue),
         "debt_to_equity": safe_div(debt, equity),
-
         "revenue_growth": pct_growth(revenue, prev_rev),
         "earnings_growth": pct_growth(net_income, prev_ni),
-
         "earnings_yield": earnings_yield,
         "book_to_price": book_to_price,
         "sales_yield": sales_yield,
         "ev_to_ebit": ev_to_ebit,
-
-        # Compatibilidade com o restante do projeto.
         "raw_pe": pe,
         "raw_pb": pb,
         "raw_ev_ebitda": ev_to_ebit,
         "enterprise_value": enterprise_value,
-        "ebitda": op_income,          # proxy EBIT operacional, explicitamente aproximada
+        "ebitda": op_income,
         "fcf": np.nan,
         "beta": np.nan,
         "trailing_eps": np.nan,
         "book_value_per_share": np.nan,
-
         "dfp_year": current_year,
         "previous_dfp_year": previous_year,
     })
 
 fund = pd.DataFrame(rows)
+
 Path("data").mkdir(exist_ok=True)
 Path("results").mkdir(exist_ok=True)
 
@@ -351,8 +348,8 @@ status = {
     "cvm_unmatched": len(unmatched),
     "dfp_year": current_year,
     "previous_dfp_year": previous_year,
+    "financial_units": "BRL",
     "fundamental_source": "CVM DFP bulk",
-    "market_metadata_source": "brapi public tickers/profile",
 }
 
 Path("results/fundamentals_status.json").write_text(
@@ -361,10 +358,10 @@ Path("results/fundamentals_status.json").write_text(
 )
 
 minimum_ok = max(20, int(len(universe) * 0.50))
+
 print(f"[OK] fundamentos CVM: {len(fund)}/{len(universe)}", flush=True)
 
 if len(fund) < minimum_ok:
     raise SystemExit(
-        f"Cruzamento CVM insuficiente ({len(fund)}/{len(universe)}). "
-        "Veja results/cvm_unmatched.csv antes de gerar ranking."
+        f"Cruzamento CVM insuficiente ({len(fund)}/{len(universe)})."
     )
