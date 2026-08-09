@@ -1,0 +1,52 @@
+{
+  "engine": "Microsoft Qlib LGBModel / LightGBM binary opportunity classifier",
+  "target": "future stock beats Ibovespa + costs + minimum margin; also beats CDI + costs when CDI is available",
+  "horizons": [
+    20,
+    60
+  ],
+  "minimum_extra_alpha": {
+    "20": 0.005,
+    "60": 0.01
+  },
+  "round_trip_cost": 0.002,
+  "validation": "3 expanding purged walk-forward folds; embargo by horizon; probability threshold selected only on validation",
+  "horizon_results": {
+    "20": {
+      "folds": 3,
+      "signals": 0,
+      "base_rate": 0.3435849056603774,
+      "precision": NaN,
+      "precision_lift": NaN,
+      "avg_net_alpha_vs_ibov": NaN,
+      "avg_net_excess_vs_cdi": null,
+      "stable_positive_folds": 0,
+      "chosen_current_threshold": 0.65,
+      "accepted": false,
+      "acceptance_rule": ">=25 OOS signals; precision>=58%; lift>=8pp; positive net alpha; >=2/3 positive folds; positive CDI excess when available."
+    },
+    "60": {
+      "folds": 3,
+      "signals": 0,
+      "base_rate": 0.3279879561887648,
+      "precision": NaN,
+      "precision_lift": NaN,
+      "avg_net_alpha_vs_ibov": NaN,
+      "avg_net_excess_vs_cdi": null,
+      "stable_positive_folds": 0,
+      "chosen_current_threshold": 0.65,
+      "accepted": false,
+      "acceptance_rule": ">=25 OOS signals; precision>=58%; lift>=8pp; positive net alpha; >=2/3 positive folds; positive CDI excess when available."
+    }
+  },
+  "accepted_horizons": [],
+  "ml_v3_status": "REJECTED",
+  "current_scored_stocks": 106,
+  "current_confirms": 0,
+  "limitations": [
+    "Universe begins with currently listed companies, so survivorship bias remains.",
+    "Historical model still lacks point-in-time accounting fundamentals.",
+    "Yahoo Finance is free/non-official and can have gaps.",
+    "Model probabilities are LightGBM scores and are not guaranteed/calibrated probabilities of profit."
+  ]
+}
