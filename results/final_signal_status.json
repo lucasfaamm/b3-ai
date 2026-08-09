@@ -1,10 +1,19 @@
 {
   "market_regime": "RISK_OFF",
   "market_regime_score": 40.0,
-  "calibration_validated": false,
-  "vectorbt_validated": false,
+  "strong_buy_authorized": false,
   "strong_buys": 0,
   "evaluate_buys": 0,
-  "watchlist": 10,
-  "important": "final_confidence_score is an evidence score, not a probability of profit."
+  "watchlist": 12,
+  "deployed_weights": {
+    "quality": 0.25,
+    "growth": 0.2,
+    "valuation": 0.2,
+    "momentum": 0.2,
+    "risk": 0.15
+  },
+  "vectorbt_weight": 0,
+  "qlib_weight": 0,
+  "forward_months_evaluated": 0,
+  "important": "Evidence score, not probability of profit. No automatic orders."
 }

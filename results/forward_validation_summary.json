@@ -1,0 +1,23 @@
+{
+  "frozen_rule": "Top10 fixed weights 25/20/20/20/15; Qlib=0; VectorBT=0",
+  "new_forward_months_evaluated": 0,
+  "avg_alpha_vs_ibov_20d": null,
+  "positive_alpha_rate_vs_ibov": null,
+  "avg_excess_vs_cdi_20d": null,
+  "positive_excess_rate_vs_cdi": null,
+  "bootstrap_alpha_vs_ibov": {
+    "n": 0,
+    "mean": null,
+    "ci95_low": null,
+    "ci95_high": null
+  },
+  "bootstrap_excess_vs_cdi": {
+    "n": 0,
+    "mean": null,
+    "ci95_low": null,
+    "ci95_high": null
+  },
+  "strong_buy_unlock": false,
+  "unlock_rule": "24 NEW monthly observations plus positive mean/hit-rate and 95% bootstrap lower bound >0 versus both IBOV and CDI",
+  "updated_at": "2026-08-09T13:28:34.961852+00:00"
+}

@@ -1,0 +1,14 @@
+{
+  "model": "B3 AI FINAL",
+  "frozen_at": "2026-08-09",
+  "weights": {
+    "quality": 0.25,
+    "growth": 0.2,
+    "valuation": 0.2,
+    "momentum": 0.2,
+    "risk": 0.15
+  },
+  "qlib_weight": 0,
+  "vectorbt_weight": 0,
+  "strong_buy_unlock": "only from new forward evidence"
+}

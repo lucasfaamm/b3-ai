@@ -1,0 +1,120 @@
+{
+  "test_period": {
+    "start": "2025-03-31",
+    "end": "2026-07-31",
+    "important": "This period has already been inspected. It is now treated as an evidence period, not a fresh untouched test for any new model-selection decisions."
+  },
+  "benchmark_fix": "IBOV and CDI are evaluated separately. The invalid month-by-month max(IBOV, CDI) benchmark has been removed.",
+  "default_pre_specified_weights": {
+    "weights": {
+      "quality": 0.25,
+      "growth": 0.2,
+      "valuation": 0.2,
+      "momentum": 0.2,
+      "risk": 0.15
+    },
+    "metrics": {
+      "months": 17,
+      "strategy_cagr": 0.24193350689014892,
+      "ibov_cagr": 0.21934117093762562,
+      "cdi_cagr": 0.13930025343165764,
+      "annualized_alpha_vs_ibov_approx": 0.018545180009431138,
+      "annualized_excess_vs_cdi_approx": 0.0987444222301017,
+      "monthly_alpha_vs_ibov_mean": 0.0015454316674525948,
+      "monthly_alpha_vs_ibov_hit_rate": 0.5294117647058824,
+      "monthly_excess_vs_cdi_mean": 0.008228701852508475,
+      "monthly_excess_vs_cdi_hit_rate": 0.5294117647058824,
+      "strategy_sortino_rf0": 2.329390068068524,
+      "strategy_max_drawdown": -0.09072976410496936,
+      "ibov_max_drawdown": -0.08879319020907162,
+      "calmar": 2.6665285562766936,
+      "avg_turnover": 0.2823529411764706,
+      "bootstrap_alpha_vs_ibov": {
+        "mean": 0.0015454316674525948,
+        "ci95_low": -0.01655765630149703,
+        "ci95_high": 0.017713294158168243,
+        "probability_mean_gt_zero": 0.5882,
+        "n": 17,
+        "bootstrap": "circular block bootstrap, block=3 months, 10000 resamples"
+      },
+      "bootstrap_excess_vs_cdi": {
+        "mean": 0.008228701852508475,
+        "ci95_low": -0.01129780381648019,
+        "ci95_high": 0.028142967282204303,
+        "probability_mean_gt_zero": 0.7858,
+        "n": 17,
+        "bootstrap": "circular block bootstrap, block=3 months, 10000 resamples"
+      }
+    },
+    "evidence_gate": {
+      "enough_months_24": false,
+      "ibov_evidence": false,
+      "cdi_evidence": false,
+      "drawdown_evidence": true,
+      "passes_all": false
+    }
+  },
+  "optimized_weights_fixed_from_prior_train_validation": {
+    "weights": {
+      "quality": 0.15929467435853756,
+      "growth": 0.23162384505617212,
+      "valuation": 0.49939231445473986,
+      "momentum": 0.03876728482127952,
+      "risk": 0.07092188130927084
+    },
+    "metrics": {
+      "months": 17,
+      "strategy_cagr": 0.21910520995189486,
+      "ibov_cagr": 0.21934117093762562,
+      "cdi_cagr": 0.13930025343165764,
+      "annualized_alpha_vs_ibov_approx": 0.0005479301936848357,
+      "annualized_excess_vs_cdi_approx": 0.08074717241435542,
+      "monthly_alpha_vs_ibov_mean": 4.566084947373631e-05,
+      "monthly_alpha_vs_ibov_hit_rate": 0.4117647058823529,
+      "monthly_excess_vs_cdi_mean": 0.006728931034529618,
+      "monthly_excess_vs_cdi_hit_rate": 0.47058823529411764,
+      "strategy_sortino_rf0": 1.7691889526169577,
+      "strategy_max_drawdown": -0.10966254853519197,
+      "ibov_max_drawdown": -0.08879319020907162,
+      "calmar": 1.997994874992181,
+      "avg_turnover": 0.21764705882352936,
+      "bootstrap_alpha_vs_ibov": {
+        "mean": 4.566084947373631e-05,
+        "ci95_low": -0.019386123517528827,
+        "ci95_high": 0.019733105388730163,
+        "probability_mean_gt_zero": 0.504,
+        "n": 17,
+        "bootstrap": "circular block bootstrap, block=3 months, 10000 resamples"
+      },
+      "bootstrap_excess_vs_cdi": {
+        "mean": 0.006728931034529618,
+        "ci95_low": -0.01617846419479928,
+        "ci95_high": 0.02847469585483755,
+        "probability_mean_gt_zero": 0.724,
+        "n": 17,
+        "bootstrap": "circular block bootstrap, block=3 months, 10000 resamples"
+      }
+    },
+    "evidence_gate": {
+      "enough_months_24": false,
+      "ibov_evidence": false,
+      "cdi_evidence": false,
+      "drawdown_evidence": true,
+      "passes_all": false
+    }
+  },
+  "default_vs_optimized_descriptive_only": {
+    "bootstrap_default_minus_optimized": {
+      "mean": 0.0014997708179788573,
+      "ci95_low": -0.010350394396274672,
+      "ci95_high": 0.012723068893739399,
+      "probability_mean_gt_zero": 0.6099,
+      "n": 17,
+      "bootstrap": "circular block bootstrap, block=3 months, 10000 resamples"
+    },
+    "important": "Do not choose between the two using this already-seen period."
+  },
+  "strong_buy_authorized_now": false,
+  "reason_strong_buy_blocked": "No fixed model has >=24 months of fresh forward evidence with 95% bootstrap lower bounds above zero versus both IBOV and CDI.",
+  "next_validation_rule": "Freeze the deployed rule now and accumulate new monthly forward outcomes. Only future observations after this freeze can unlock COMPRA_FORTE."
+}
