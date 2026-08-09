@@ -1,0 +1,15 @@
+{
+  "system": "NUBANK RADAR WEEKLY PRO",
+  "weekly_schedule": "Sunday 18:00 America/Sao_Paulo (21:00 UTC)",
+  "final_decisions": [
+    "COMPRARIA_AGORA",
+    "COMPRARIA_SOMENTE_ATE",
+    "ESPERARIA",
+    "NAO_COMPRARIA"
+  ],
+  "weekly_full_refresh": true,
+  "monthly_forward_validation": true,
+  "quarterly_cvm_refresh": true,
+  "risk_budget_pct": 0.75,
+  "note": "Systematic opinion; no guarantee of profit."
+}

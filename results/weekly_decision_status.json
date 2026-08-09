@@ -1,0 +1,11 @@
+{
+  "updated_at": "2026-08-09T21:21:57.069730+00:00",
+  "reanalyzed": 100,
+  "buy_now": 0,
+  "buy_only_up_to": 0,
+  "wait": 85,
+  "do_not_buy": 15,
+  "decision_rule": "Strict weekly multi-factor review + class-specific checks + price plan + portfolio concentration + news veto.",
+  "risk_budget": "Suggested total position targets <=0.75% portfolio risk to quantitative invalidation, subject to class cap.",
+  "important": "Final decision is a systematic evidence-based opinion, never a guarantee of profit."
+}

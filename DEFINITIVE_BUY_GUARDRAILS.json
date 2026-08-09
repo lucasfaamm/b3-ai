@@ -1,0 +1,21 @@
+{
+  "stage_flow": [
+    "AVALIAR_COMPRA",
+    "PRE_COMPRA",
+    "COMPRA_CONFIRMADA"
+  ],
+  "confirmation": "2 passes in last 3 distinct daily observations",
+  "hard_vetoes": [
+    "RISK_OFF",
+    "elevated risk",
+    "weak trend",
+    "low liquidity",
+    "excess volatility/drawdown",
+    "overextended price",
+    "negative class forward evidence",
+    "portfolio concentration",
+    "negative news veto"
+  ],
+  "position_risk_budget_pct": 0.75,
+  "important": "No model can guarantee a profitable trade."
+}
