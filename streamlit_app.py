@@ -4,207 +4,85 @@ import json
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(page_title="B3 AI Radar", page_icon="📈", layout="wide")
-
+st.set_page_config(page_title="B3 AI Radar",page_icon="📈",layout="wide")
 st.title("📈 B3 AI Radar")
-st.caption(
-    "Radar quantitativo experimental. "
-    "Sinais precisam de validação/backtest; não há garantia de retorno."
-)
+st.caption("Sinais quantitativos validados quando possível. Nenhum score é garantia ou probabilidade de lucro.")
 
-RANKING = Path("results/ranking.csv")
-PORTFOLIO = Path("portfolio.csv")
-STATUS = Path("results/status.json")
+def csv(p):
+    p=Path(p)
+    if not p.exists() or not p.stat().st_size:return pd.DataFrame()
+    try:return pd.read_csv(p,comment="#")
+    except:return pd.DataFrame()
 
+final=csv("results/final_signals.csv")
+portfolio=csv("portfolio.csv")
+status={}
+p=Path("results/final_signal_status.json")
+if p.exists():
+    try:status=json.loads(p.read_text(encoding="utf-8"))
+    except:pass
 
-def read_csv(path):
-    if not path.exists() or path.stat().st_size == 0:
-        return pd.DataFrame()
-    try:
-        return pd.read_csv(path, comment="#")
-    except Exception:
-        return pd.DataFrame()
+c1,c2,c3,c4=st.columns(4)
+c1.metric("Regime",status.get("market_regime","?"))
+c2.metric("Score de mercado",status.get("market_regime_score","?"))
+c3.metric("Compras fortes",status.get("strong_buys","?"))
+c4.metric("Calibração OOS","SIM" if status.get("calibration_validated") else "NÃO")
 
-
-ranking = read_csv(RANKING)
-portfolio = read_csv(PORTFOLIO)
-
-if STATUS.exists():
-    try:
-        status = json.loads(STATUS.read_text(encoding="utf-8"))
-        st.caption(
-            f"Última atualização: {status.get('updated_at','?')} | "
-            f"Ativos investíveis: {status.get('investible', len(ranking))}"
-        )
-    except Exception:
-        pass
-
-
-tabs = st.tabs([
-    "🎯 Oportunidades",
-    "💼 Minha carteira",
-    "📊 Ranking",
-    "ℹ️ Regras",
-])
-
+tabs=st.tabs(["🚨 Sinais finais","🎯 Ranking","💼 Minha carteira","🧪 Validação","ℹ️ Regras"])
 
 with tabs[0]:
-
-    st.subheader("Melhores candidatas atuais")
-
-    if ranking.empty:
-        st.info("Ranking ainda não foi gerado.")
+    st.subheader("Oportunidades")
+    if final.empty:
+        st.info("Execute o workflow Final Research + Signals.")
     else:
-        x = ranking.copy()
-
-        if "data_quality" in x.columns:
-            x = x[x["data_quality"] == "OK"]
-
-        x = x.sort_values("score", ascending=False)
-
-        top = x.head(15)
-
-        cols = [
-            "ticker", "company_name", "score", "action", "price",
-            "quality_score", "growth_score", "valuation_score",
-            "momentum_score", "risk_score", "data_coverage"
-        ]
-        cols = [c for c in cols if c in top.columns]
-
-        st.dataframe(
-            top[cols],
-            use_container_width=True,
-            hide_index=True,
-        )
-
-        strong = x[x["score"] >= 80]
-
-        st.markdown("### Oportunidades confirmadas pelo corte atual")
-
-        if strong.empty:
-            st.info(
-                "Nenhum ativo com score ≥ 80 e qualidade de dados suficiente. "
-                "Isso não é erro: o modelo não está forçando uma compra."
-            )
-        else:
-            st.dataframe(
-                strong[cols].head(30),
-                use_container_width=True,
-                hide_index=True,
-            )
-
+        x=final[final["final_signal"].isin(["COMPRA_FORTE","AVALIAR_COMPRA","WATCHLIST"])]
+        cols=[c for c in ["ticker","company_name","price","calibrated_score","final_confidence_score",
+                          "final_signal","quality_score","growth_score","valuation_score","momentum_score",
+                          "risk_score","technical_confirm","market_regime","failed_gates"] if c in x.columns]
+        st.dataframe(x[cols].head(30),use_container_width=True,hide_index=True)
 
 with tabs[1]:
-
-    st.subheader("Minha carteira")
-
-    if portfolio.empty:
-        st.info(
-            "A carteira ainda não foi preenchida. "
-            "Depois vamos importar posições, quantidade e preço médio."
-        )
-    else:
-        st.dataframe(
-            portfolio,
-            use_container_width=True,
-            hide_index=True,
-        )
-
-        if not ranking.empty and "ticker" in portfolio.columns:
-            keep = [
-                c for c in [
-                    "ticker", "score", "action", "price",
-                    "quality_score", "growth_score",
-                    "valuation_score", "momentum_score",
-                    "risk_score", "data_quality"
-                ]
-                if c in ranking.columns
-            ]
-
-            merged = portfolio.merge(
-                ranking[keep],
-                on="ticker",
-                how="left",
-            )
-
-            if {"quantity", "price"}.issubset(merged.columns):
-                merged["current_value_brl"] = (
-                    pd.to_numeric(merged["quantity"], errors="coerce")
-                    * pd.to_numeric(merged["price"], errors="coerce")
-                )
-
-            st.markdown("### Diagnóstico das posições")
-
-            st.dataframe(
-                merged,
-                use_container_width=True,
-                hide_index=True,
-            )
-
+    if not final.empty:
+        cols=[c for c in ["ticker","company_name","sector","price","calibrated_score",
+                          "final_confidence_score","final_signal","gates_passed","gates_total",
+                          "quality_score","growth_score","valuation_score","momentum_score","risk_score"] if c in final.columns]
+        st.dataframe(final[cols].head(250),use_container_width=True,hide_index=True)
 
 with tabs[2]:
-
-    st.subheader("Ranking B3")
-
-    if ranking.empty:
-        st.info("Ranking ainda não gerado.")
+    if portfolio.empty:
+        st.info("Preencha portfolio.csv.")
+    elif final.empty:
+        st.dataframe(portfolio,use_container_width=True,hide_index=True)
     else:
-        x = ranking.sort_values("score", ascending=False).copy()
-
-        important = [
-            "ticker",
-            "company_name",
-            "sector",
-            "industry",
-            "score",
-            "action",
-            "price",
-            "quality_score",
-            "growth_score",
-            "valuation_score",
-            "momentum_score",
-            "risk_score",
-            "data_coverage",
-            "data_quality",
-            "market_cap",
-        ]
-        important = [c for c in important if c in x.columns]
-
-        st.dataframe(
-            x[important].head(200),
-            use_container_width=True,
-            hide_index=True,
-        )
-
-        with st.expander("Ver dados fundamentais brutos"):
-            st.dataframe(
-                x.head(200),
-                use_container_width=True,
-                hide_index=True,
-            )
-
+        keep=[c for c in ["ticker","price","calibrated_score","final_confidence_score","final_signal","failed_gates"] if c in final.columns]
+        x=portfolio.merge(final[keep],on="ticker",how="left")
+        if {"quantity","price"}.issubset(x.columns):
+            x["current_value_brl"]=pd.to_numeric(x["quantity"],errors="coerce")*pd.to_numeric(x["price"],errors="coerce")
+        st.dataframe(x,use_container_width=True,hide_index=True)
 
 with tabs[3]:
+    for title,path in [
+        ("VectorBT vs IBOV/CDI","results/vectorbt_benchmark.json"),
+        ("Pesos calibrados / backtest fundamental PIT","results/calibrated_weights.json"),
+        ("CVM PIT","results/cvm_pit_status.json"),
+    ]:
+        st.markdown(f"### {title}")
+        p=Path(path)
+        if p.exists():
+            st.json(json.loads(p.read_text(encoding="utf-8")))
+        else:
+            st.info("Ainda não executado.")
 
+with tabs[4]:
     st.markdown("""
-### Interpretação provisória
-
-- **85–100:** oportunidade excepcional para revisão
-- **80–84,99:** forte candidata
-- **70–79,99:** watchlist
-- **60–69,99:** neutro
-- **<60:** não priorizar
-
-### Proteção de qualidade
-
-Um ativo não pode receber sinal forte se estiver faltando:
-- qualidade;
-- valuation;
-- momentum;
-- cobertura mínima dos dados.
+### COMPRA_FORTE
+Só pode aparecer se a calibração fundamental **fora da amostra** tiver sido aceita.
+Além disso, exige convergência de qualidade, valuation, momentum, risco, mercado,
+dados e ausência de alerta de notícia. O VectorBT só vira gate obrigatório se
+também vencer seus benchmarks fora da amostra.
 
 ### Importante
-
-Os cortes e pesos ainda serão calibrados por backtest walk-forward.
-O sistema não executa ordens automaticamente.
+`final_confidence_score` é um **score de evidências**, não probabilidade de lucro.
+Se a calibração histórica falhar, o sistema pode mostrar watchlist, mas não
+produz `COMPRA_FORTE`.
 """)
