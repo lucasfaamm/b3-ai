@@ -1,0 +1,12 @@
+{
+  "rows": 4234,
+  "tickers": 169,
+  "companies": 162,
+  "start_reference": "2020-02-29",
+  "end_reference": "2026-06-30",
+  "network_route": "cloudflare_worker",
+  "source": "Official CVM DFP/ITR bulk files; received_date preserved.",
+  "lookahead_control": "Only filings with received_date <= rebalance date may be used.",
+  "itr_policy": "ITR flow values are kept cumulative/YTD here; do NOT annualize by 4/q.",
+  "next_step": "Use corrected de-accumulation + TTM backtest; do not run the old research_final workflow."
+}

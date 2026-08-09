@@ -1,0 +1,171 @@
+ticker,cnpj,sector,industry
+ALOS3,05878397000132,Construção e Imobiliário,Exploração de Imóveis
+ABEV3,07526557000100,Consumo Não Cíclico,Cervejas e Refrigerantes
+ALLD3,20247322000147,Consumo Cíclico,Eletrodomésticos
+ABCB4,28195667000106,Serviços Financeiros,Bancos
+AMAR3,61189288000189,Consumo Cíclico,Tecidos. Vestuário e Calçados
+AMER3,00776574000156,Consumo Cíclico,Produtos Diversos
+ANIM3,09288252000132,Educação,Serviços Educacionais
+AMBP3,12648266000124,Saneamento,Água e Saneamento
+ARML3,00242184000104,Bens Industriais,Máq. e Equip. Industriais
+ASAI3,06057223000171,Consumo Não Cíclico,Alimentos
+AUAU3,53153938000108,Consumo Cíclico,Produtos Diversos
+AURE3,28594234000123,Energia,Energia Elétrica
+AZEV3,61351532000168,Construção e Imobiliário,Construção Pesada
+AZZA3,16590234000176,Consumo Cíclico,"Tecidos, Vestuário e Calçados"
+B3SA3,09346601000125,Serviços Financeiros,Dados Financeiros e Bolsas de Valores
+BBAS3,00000000000191,Serviços Financeiros,Bancos Diversificados
+BBDC3,60746948000112,Serviços Financeiros,Bancos
+BBDC4,60746948000112,Serviços Financeiros,Bancos Diversificados
+BBSE3,17344597000194,Serviços Financeiros,Seguradoras
+BEEF3,67620377000114,Consumo Não Cíclico,Carnes e Derivados
+BHIA3,33041260065290,Consumo Cíclico,Eletrodomésticos
+BLAU3,58430828000160,Consumo Não Cíclico,Medicamentos e Outros Produtos
+BMGB4,61186680000174,Serviços Financeiros,Bancos
+BMOB3,09042817000105,Tecnologia,Programas e Serviços
+BPAC11,30306294000145,Serviços Financeiros,Bancos
+BRAV3,12091809000155,Energia,Exploração e Produção de Petróleo
+BRBI11,10739356000103,Serviços Financeiros,Bancos
+BRKM5,42150391000170,Materiais Básicos,Petroquímicos
+CAML3,64904295000103,Consumo Não Cíclico,Alimentos Diversos
+CASH3,14110585000107,Tecnologia,Programas e Serviços
+CBAV3,61409892000173,Materiais Básicos,Minerais Metálicos
+CEAB3,45242914000105,Consumo Cíclico,Tecidos. Vestuário e Calçados
+CMIG4,17155730000164,Energia,Energia Elétrica
+CMIN3,08902291000115,Materiais Básicos,Minerais Metálicos
+COGN3,02800026000140,Educação,Serviços Educacionais
+CPFE3,02429144000193,Energia,Energia Elétrica
+CPLE3,76483817000120,Energia,Energia Elétrica
+CSAN3,50746577000115,Energia,"Exploração, Refino e Distribuição"
+CSED3,62984091000102,Educação,Serviços Educacionais
+CSMG3,17281106000103,Saneamento,Água e Saneamento
+CSNA3,33042730000104,Materiais Básicos,Siderurgia
+CURY3,08797760000183,Construção e Imobiliário,Incorporações
+CXSE3,22543331000100,Serviços Financeiros,Seguradoras
+CVCB3,10760260000119,Consumo Cíclico,Viagens e Turismo
+CYRE3,73178600000118,Construção e Imobiliário,Incorporações
+DASA3,61486650000183,Saúde,Serv.Méd.Hospit..Análises e Diagnósticos
+DESK3,08170849000115,Telecomunicações,Telecomunicações
+DIRR3,16614075000100,Construção e Imobiliário,Incorporações
+DXCO3,97837181000147,Materiais Básicos,Madeira
+ECOR3,04149454000180,Infraestrutura,Exploração de Rodovias
+EGIE3,02474103000119,Energia,Energia Elétrica
+ENEV3,04423567000121,Energia,Energia Elétrica
+ENJU3,16922038000151,Tecnologia,Programas e Serviços
+ENGI11,00864214000106,Energia,Energia Elétrica
+EQTL3,03220438000173,Energia,Energia Elétrica
+EVEN3,43470988000165,Construção e Imobiliário,Incorporações
+EZTC3,08312229000173,Construção e Imobiliário,Incorporações
+FIQE3,02255187000108,Telecomunicações,Telecomunicações
+FLRY3,60840055000131,Saúde,Serviços Médicos Hospitalares
+GGBR4,33611500000119,Materiais Básicos,Siderurgia
+FRAS3,88610126000129,Consumo Cíclico,Material Rodoviário
+GFSA3,01545826000107,Construção e Imobiliário,Incorporações
+GGPS3,09229201000130,Serviços,Serviços Diversos
+HAPV3,05197443000138,Saúde,Serviços Médicos Hospitalares
+GMAT3,24990777000109,Consumo Não Cíclico,Alimentos
+GOAU4,92690783000109,Materiais Básicos,Siderurgia
+GRND3,89850341000160,Consumo Cíclico,Calçados
+HBOR3,49263189000102,Construção e Imobiliário,Incorporações
+HBRE3,14785152000151,Construção e Imobiliário,Exploração de Imóveis
+HYPE3,02932074000191,Consumo Não Cíclico,Medicamentos e Outros Produtos
+HBSA3,12648327000153,Bens Industriais,Transporte Hidroviário
+IGTI11,60543816000193,Construção e Imobiliário,Exploração de Imóveis
+INTB3,82901000000127,Tecnologia,Computadores e Equipamentos
+ISAE4,02998611000104,Energia,Energia Elétrica
+IRBR3,33376989000191,Serviços Financeiros,Resseguradoras
+ITUB3,60872504000123,Serviços Financeiros,Bancos
+ITUB4,60872504000123,Serviços Financeiros,Bancos Diversificados
+JALL3,02635522000195,Consumo Não Cíclico,Açucar e Alcool
+JHSF3,08294224000165,Construção e Imobiliário,Incorporações
+JSLG3,52548435000179,Bens Industriais,Transporte Rodoviário
+KLBN11,89637490000145,Materiais Básicos,Papel e Celulose
+KLBN3,89637490000145,Materiais Básicos,Papel e Celulose
+KEPL3,91983056000169,Bens Industriais,Máq. e Equip. Industriais
+LAVV3,26462693000128,Construção e Imobiliário,Incorporações
+LIGT3,03378521000175,Energia,Energia Elétrica
+LEVE3,60476884000187,Consumo Cíclico,Automóveis e Motocicletas
+LJQQ3,96418264021802,Consumo Cíclico,Produtos Diversos
+LOGG3,09041168000110,Construção e Imobiliário,Exploração de Imóveis
+LREN3,92754738000162,Consumo Cíclico,"Tecidos, Vestuário e Calçados"
+LWSA3,02351877000152,Tecnologia,Programas e Serviços
+MDIA3,07206816000115,Consumo Não Cíclico,Alimentos Diversos
+MELK3,12181987000177,Construção e Imobiliário,Incorporações
+MDNE3,12049631000184,Construção e Imobiliário,Incorporações
+MGLU3,47960950000121,Consumo Cíclico,Varejo Especializado
+MILS3,27093558000115,Bens Industriais,Máq. e Equip. Industriais
+MLAS3,59717553000102,Tecnologia,Computadores e Equipamentos
+MOTV3,02846056000197,Infraestrutura,Exploração de Rodovias
+MOVI3,21314559000166,Consumo Cíclico,Aluguel de carros
+MRVE3,08343492000120,Construção e Imobiliário,Incorporações
+MULT3,07816890000153,Construção e Imobiliário,Exploração de Imóveis
+MTRE3,07882930000165,Construção e Imobiliário,Incorporações
+MYPK3,61156113000175,Consumo Cíclico,Automóveis e Motocicletas
+NATU3,71673990000177,Consumo Não Cíclico,Produtos de Uso Pessoal
+OIBR3,76535764000143,Telecomunicações,Telecomunicações
+ONCO3,12104241000402,Saúde,Serv.Méd.Hospit..Análises e Diagnósticos
+OPCT3,09114805000130,Bens Industriais,Equipamentos e Serviços
+ORVR3,11421994000136,Saneamento,Água e Saneamento
+PASS3,21389501000181,Energia,Gás
+PCAR3,47508411000156,Consumo Não Cíclico,Alimentos
+PDGR3,02950811000189,Construção e Imobiliário,Incorporações
+PETR3,33000167000101,Energia,Exploração. Refino e Distribuição
+PETR4,33000167000101,Energia,Petróleo e Gás Integrado
+PGMN3,06626253000151,Consumo Não Cíclico,Medicamentos e Outros Produtos
+PLPL3,24230275000180,Construção e Imobiliário,Incorporações
+PNVL3,92665611000177,Consumo Não Cíclico,Medicamentos e Outros Produtos
+PMAM3,60398369000479,Materiais Básicos,Artefatos de Cobre
+POMO3,88611835000129,Consumo Cíclico,Material Rodoviário
+PRNR3,18593815000197,Serviços,Serviços Diversos
+POSI3,81243735000148,Tecnologia,Computadores e Equipamentos
+PRIO3,10629105000168,Energia,Exploração e Produção de Petróleo
+PSSA3,02149205000169,Serviços Financeiros,Seguradoras
+RADL3,61585865000151,Consumo Não Cíclico,Medicamentos e Outros Produtos
+PTBL3,83475913000191,Construção e Imobiliário,Produtos para Construção
+QUAL3,11992680000193,Saúde,Serv.Méd.Hospit..Análises e Diagnósticos
+RAIL3,02387241000160,Bens Industriais,Transporte Ferroviário
+RAIZ4,33453598000123,Consumo Não Cíclico,Açúcar e Álcool
+RANI3,92791243000103,Materiais,Embalagens
+RCSL3,91333666000117,Consumo Cíclico,Material Rodoviário
+RECV3,03342704000130,Energia,Exploração e Produção de Petróleo
+RDOR3,06047087000139,Saúde,Serviços Médicos Hospitalares
+RENT3,16670085000155,Consumo Cíclico,Aluguel de Carros
+ROMI3,56720428000163,Bens Industriais,Máquinas e Equipamentos Industriais
+SANB11,90400888000142,Serviços Financeiros,Bancos
+SANB3,90400888000142,Serviços Financeiros,Bancos
+SBFG3,13217485000111,Consumo Cíclico,Produtos Diversos
+SBSP3,43776517000180,Saneamento,Água e Saneamento
+SEER3,04986320000113,Educação,Serviços Educacionais
+SIMH3,07415333000120,Holdings,Holdings Diversificadas
+SLCE3,89096457000155,Consumo Não Cíclico,Agricultura
+SMFT3,07594978000178,Consumo Cíclico,Atividades Esportivas
+SMTO3,51466860000156,Consumo Não Cíclico,Açúcar e Álcool
+SOJA3,10807374000177,Consumo Não Cíclico,Agricultura
+SUZB3,16404287000155,Materiais Básicos,Papel e Celulose
+SYNE3,08801621000186,Construção e Imobiliário,Exploração de Imóveis
+TAEE11,07859971000130,Energia,Energia Elétrica
+TAEE3,07859971000130,Energia,Energia Elétrica
+TEND3,71476527000135,Construção e Imobiliário,Incorporações
+TFCO4,59418806000147,Consumo Cíclico,Vestuário
+TGMA3,02351144000118,Bens Industriais,Transporte Rodoviário
+TIMS3,02421421000111,Telecomunicações,Telecomunicações
+TOTS3,53113791000122,Tecnologia,Programas e Serviços
+TRIS3,08811643000127,Construção e Imobiliário,Incorporações
+TTEN3,94813102000170,Consumo Não Cíclico,Agricultura
+TUPY3,84683374000300,Consumo Cíclico,Material Rodoviário
+UGPA3,33256439000139,Energia,"Exploração, Refino e Distribuição"
+USIM3,60894730000105,Materiais Básicos,Siderurgia
+VALE3,33592510000154,Materiais Básicos,Mineração de Minerais Metálicos
+USIM5,60894730000105,Materiais Básicos,Siderurgia
+VAMO3,23373000000132,Consumo Cíclico,Aluguel de Carros
+VBBR3,34274233000102,Energia,"Exploração, Refino e Distribuição"
+VITT3,45365558000109,Materiais Básicos,Fertilizantes e Defensivos
+VIVA3,33839910000111,Consumo Cíclico,Acessórios
+VIVT3,02558157000162,Telecomunicações,Telecomunicações
+VLID3,33113309000147,Serviços,Serviços Diversos
+VTRU3,20512706000140,Educação,Serviços Educacionais
+VULC3,50926955000142,Consumo Cíclico,Calçados
+VVEO3,12420164000157,Consumo Não Cíclico,Medicamentos e Outros Produtos
+WEGE3,84429695000111,Bens Industriais,Máquinas e Equipamentos
+YDUQ3,08807432000110,Educação,Serviços Educacionais
+WIZC3,42278473000103,Serviços Financeiros,Corretoras de Seguros e Resseguros
