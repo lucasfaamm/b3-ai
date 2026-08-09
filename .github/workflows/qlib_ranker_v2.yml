@@ -1,0 +1,43 @@
+
+name: Qlib Ranker V2 research
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 15 * * 0"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: b3-research-qlib-v2
+  cancel-in-progress: false
+
+jobs:
+  ranker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install base dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Qlib and LightGBM
+        run: pip install pyqlib lightgbm
+
+      - name: Run purged walk-forward ranker
+        run: python qlib_ranker_v2.py
+
+      - name: Commit V2 research
+        run: |
+          git config user.name "b3-ai-bot"
+          git config user.email "b3-ai-bot@users.noreply.github.com"
+          git add results/qlib_v2_*.csv results/qlib_v2_summary.json
+          git diff --cached --quiet || git commit -m "Update Qlib Ranker V2 research"
+          git push
