@@ -1,0 +1,78 @@
+{
+  "engine": "Microsoft Qlib LGBModel / LightGBM",
+  "prediction_target": "20-trading-day stock return minus Ibovespa return",
+  "universe_requested": 120,
+  "training_examples": 19935,
+  "validation_examples": 7360,
+  "test_examples": 7493,
+  "train_end": "2023-12-19",
+  "validation_end": "2025-04-02",
+  "test_daily_ic_mean": 0.0864473422332171,
+  "test_daily_ic_median": 0.08411192671452138,
+  "test_daily_ic_positive_rate": 0.734375,
+  "oos_top10_periods": 16,
+  "oos_top10_avg_alpha_20d": -0.015379714353320396,
+  "oos_top10_positive_alpha_rate": 0.375,
+  "oos_top10_avg_stock_return_20d": 0.004892120519356665,
+  "oos_ibov_avg_return_20d": 0.020271834872677065,
+  "top_features": [
+    {
+      "feature": "vol_63",
+      "gain": 43.805933237075806,
+      "split": 50
+    },
+    {
+      "feature": "ibov_ret_126",
+      "gain": 25.38444897532463,
+      "split": 34
+    },
+    {
+      "feature": "ibov_ret_63",
+      "gain": 19.915224879980087,
+      "split": 24
+    },
+    {
+      "feature": "ibov_vol_20",
+      "gain": 16.53199003636837,
+      "split": 22
+    },
+    {
+      "feature": "ret_63",
+      "gain": 16.51474191248417,
+      "split": 17
+    },
+    {
+      "feature": "price_ma_200",
+      "gain": 13.996942937374115,
+      "split": 14
+    },
+    {
+      "feature": "ibov_ret_21",
+      "gain": 12.731193959712982,
+      "split": 24
+    },
+    {
+      "feature": "ret_252",
+      "gain": 12.285256087779999,
+      "split": 18
+    },
+    {
+      "feature": "price_ma_50",
+      "gain": 12.06347605586052,
+      "split": 14
+    },
+    {
+      "feature": "rel_ret_126",
+      "gain": 11.527546986937523,
+      "split": 15
+    }
+  ],
+  "current_scored_stocks": 120,
+  "limitations": [
+    "ML histórico usa apenas preço, volume e contexto do Ibovespa para evitar look-ahead de fundamentos atuais.",
+    "Universo parte de empresas atuais; ainda existe survivorship bias.",
+    "Yahoo Finance é fonte gratuita/não oficial e pode conter falhas.",
+    "O Qlib score é ranking relativo do modelo, não probabilidade de lucro.",
+    "Fundamentos atuais serão combinados ao ML somente na camada de decisão atual, não no treino histórico."
+  ]
+}
