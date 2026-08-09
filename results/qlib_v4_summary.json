@@ -1,0 +1,52 @@
+{
+  "engine": "Qlib LightGBM binary model used as cross-sectional rank signal",
+  "why_v4": "V3 used absolute score thresholds even though LightGBM outputs were not calibrated probabilities. V4 validates top cross-sectional fractions instead.",
+  "horizons": [
+    20,
+    60
+  ],
+  "top_fractions_tested": [
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "validation": "3 expanding purged walk-forward folds; top fraction selected only on validation",
+  "horizon_results": {
+    "20": {
+      "periods": 39,
+      "base_rate": 0.3435849056603774,
+      "precision": 0.3437365104031771,
+      "precision_lift": 0.0001516047427996825,
+      "avg_net_alpha_vs_ibov": -0.01859972159075037,
+      "avg_net_excess_vs_cdi": -0.018040971917197317,
+      "stable_positive_folds": 0,
+      "chosen_current_top_fraction": 0.1,
+      "accepted": false,
+      "acceptance_rule": ">=20 OOS periods; precision>=55%; lift>=6pp; positive net alpha; >=2/3 positive folds; positive CDI excess when available."
+    },
+    "60": {
+      "periods": 14,
+      "base_rate": 0.3279879561887648,
+      "precision": 0.3084415584415584,
+      "precision_lift": -0.0195463977472064,
+      "avg_net_alpha_vs_ibov": 0.012381810839799178,
+      "avg_net_excess_vs_cdi": 0.014463343215182682,
+      "stable_positive_folds": 0,
+      "chosen_current_top_fraction": 0.1,
+      "accepted": false,
+      "acceptance_rule": ">=20 OOS periods; precision>=55%; lift>=6pp; positive net alpha; >=2/3 positive folds; positive CDI excess when available."
+    }
+  },
+  "accepted_horizons": [],
+  "ml_v4_status": "REJECTED",
+  "current_scored_stocks": 106,
+  "current_confirms": 0,
+  "limitations": [
+    "Universe still starts from currently listed stocks: survivorship bias remains.",
+    "Historical model lacks point-in-time fundamentals.",
+    "Yahoo Finance is free/non-official.",
+    "Model raw scores are treated only as ranks, not probabilities."
+  ]
+}
