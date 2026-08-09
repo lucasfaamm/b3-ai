@@ -1,0 +1,45 @@
+
+name: Qlib LightGBM research
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 14 * * 0"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: b3-research-qlib
+  cancel-in-progress: false
+
+jobs:
+  qlib:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          # Qlib currently supports 3.8-3.12.
+          # 3.11 is conservative for its larger dependency stack.
+          python-version: "3.11"
+
+      - name: Install base project
+        run: pip install -r requirements.txt
+
+      - name: Install Microsoft Qlib
+        run: pip install pyqlib
+
+      - name: Run Qlib LightGBM out-of-sample research
+        run: python qlib_research.py
+
+      - name: Commit Qlib results
+        run: |
+          git config user.name "b3-ai-bot"
+          git config user.email "b3-ai-bot@users.noreply.github.com"
+          git add results/qlib_*.csv results/qlib_summary.json
+          git diff --cached --quiet || git commit -m "Update Qlib LightGBM research"
+          git push
