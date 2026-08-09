@@ -1,0 +1,43 @@
+
+name: VectorBT research
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 14 * * 0"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: b3-research
+  cancel-in-progress: false
+
+jobs:
+  vectorbt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install project dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install VectorBT
+        run: pip install vectorbt
+
+      - name: Run VectorBT out-of-sample research
+        run: python vectorbt_research.py
+
+      - name: Commit research results
+        run: |
+          git config user.name "b3-ai-bot"
+          git config user.email "b3-ai-bot@users.noreply.github.com"
+          git add results/vectorbt_parameter_sweep.csv results/vectorbt_summary.json
+          git diff --cached --quiet || git commit -m "Update VectorBT research"
+          git push
