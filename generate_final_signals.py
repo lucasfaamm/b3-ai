@@ -1,151 +1,72 @@
-
-from __future__ import annotations
 from pathlib import Path
-import json, math
+import json
 import numpy as np
 import pandas as pd
 import yfinance as yf
 
-OUT=Path("results"); OUT.mkdir(exist_ok=True)
-rank=pd.read_csv("results/ranking.csv")
-
-default={"quality":.25,"growth":.20,"valuation":.20,"momentum":.20,"risk":.15}
-cw=default.copy(); calibration_ok=False
-p=Path("results/calibrated_weights.json")
+OUT=Path('results'); OUT.mkdir(exist_ok=True)
+rank=pd.read_csv(OUT/'ranking.csv')
+default={'quality':.25,'growth':.20,'valuation':.20,'momentum':.20,'risk':.15}; weights=default.copy(); calibration=False
+p=OUT/'calibrated_weights.json'
 if p.exists():
-    x=json.loads(p.read_text(encoding="utf-8"))
-    if x.get("accepted"):
-        cw=x["weights"]; calibration_ok=True
-
-# Base current score using calibrated component weights only if OOS accepted.
-rank["calibrated_score"]=0.0
-for k,w in cw.items():
-    c=f"{k}_score"
-    if c in rank:
-        rank["calibrated_score"] += pd.to_numeric(rank[c],errors="coerce").fillna(0)*float(w)
-
-# Technical engine benchmark validity
-vb_ok=False;vb_params=None
-p=Path("results/vectorbt_benchmark.json")
+    c=json.loads(p.read_text())
+    if c.get('accepted'): weights=c['weights']; calibration=True
+rank['validated_score']=0.0
+for k,w in weights.items():
+    col=f'{k}_score'
+    if col in rank: rank['validated_score']+=pd.to_numeric(rank[col],errors='coerce').fillna(0)*float(w)
+vectorbt_ok=False; vb_params=None
+p=OUT/'vectorbt_benchmark.json'
 if p.exists():
-    v=json.loads(p.read_text(encoding="utf-8"))
-    vb_ok=bool(v.get("accepted_as_confirmation_engine",False))
-    vb_params=v.get("best_parameters")
-
-# Current technical confirmation
-tickers=rank["ticker"].dropna().astype(str).str.upper().tolist()
-raw=yf.download(
-    [f"{t}.SA" for t in tickers]+["^BVSP","^VIX","BRL=X"],
-    period="2y",interval="1d",auto_adjust=True,progress=False,threads=True,group_by="ticker"
-)
+    v=json.loads(p.read_text()); vectorbt_ok=bool(v.get('accepted_as_confirmation_engine',False)); vb_params=v.get('best_parameters')
+tickers=rank['ticker'].dropna().astype(str).str.upper().drop_duplicates().tolist(); raw=yf.download([f'{t}.SA' for t in tickers]+['^BVSP','^VIX','BRL=X'],period='2y',interval='1d',auto_adjust=True,progress=False,threads=True,group_by='ticker')
 def close(sym):
     try:
-        x=raw[sym]["Close"]
-        if isinstance(x,pd.DataFrame):x=x.iloc[:,0]
-        return pd.to_numeric(x,errors="coerce").dropna()
+        x=raw[sym]['Close']; x=x.iloc[:,0] if isinstance(x,pd.DataFrame) else x; x=pd.to_numeric(x,errors='coerce').dropna(); x.index=pd.to_datetime(x.index).tz_localize(None); return x.sort_index()
     except Exception:return pd.Series(dtype=float)
-
-technical={}
+ib=close('^BVSP'); vix=close('^VIX'); usd=close('BRL=X')
+features={}; tech={}
 for t in tickers:
-    s=close(f"{t}.SA")
-    if len(s)<253:
-        technical[t]=False;continue
-    if vb_params:
-        f=int(vb_params["fast_ma"]);sl=int(vb_params["slow_ma"]);m=int(vb_params["momentum_days"])
-    else:
-        f,sl,m=20,200,252
-    ok=(len(s)>=max(sl,m)+1 and s.tail(f).mean()>s.tail(sl).mean() and s.iloc[-1]/s.iloc[-m-1]-1>0 and s.iloc[-1]>s.tail(sl).mean())
-    technical[t]=bool(ok)
-rank["technical_confirm"]=rank["ticker"].map(technical).fillna(False)
-
-# Market regime
-ib=close("^BVSP");vix=close("^VIX");usd=close("BRL=X")
-regime_score=50
-if len(ib)>=200:regime_score += 20 if ib.iloc[-1]>ib.tail(200).mean() else -20
-if len(vix):regime_score += 10 if vix.iloc[-1]<20 else (-15 if vix.iloc[-1]>30 else 0)
+    s=close(f'{t}.SA')
+    if len(s)<220:
+        features[t]=(np.nan,False,np.nan,np.nan,np.nan); tech[t]=False if vectorbt_ok else True; continue
+    price=float(s.iloc[-1]); ma200=float(s.tail(200).mean()); ma50=float(s.tail(50).mean()); r6=float(s.iloc[-1]/s.iloc[-127]-1) if len(s)>=127 else np.nan; ibs=ib.reindex(s.index).ffill().dropna(); ib6=float(ibs.iloc[-1]/ibs.iloc[-127]-1) if len(ibs)>=127 else np.nan; rs=r6-ib6 if not pd.isna(r6) and not pd.isna(ib6) else np.nan; daily=s.pct_change().dropna(); vol20=float(daily.tail(20).std(ddof=1)*np.sqrt(252)) if len(daily)>=20 else np.nan; low=price*(1-.35*(vol20/np.sqrt(12))) if not pd.isna(vol20) else np.nan; trend=bool(price>ma200 and ma50>ma200 and r6>0 and not pd.isna(rs) and rs>0)
+    features[t]=(price,trend,rs,low,price)
+    if vectorbt_ok and vb_params:
+        f,sl,m=int(vb_params['fast_ma']),int(vb_params['slow_ma']),int(vb_params['momentum_days']); tech[t]=bool(len(s)>=max(sl,m)+1 and s.tail(f).mean()>s.tail(sl).mean() and s.iloc[-1]>s.tail(sl).mean() and s.iloc[-1]/s.iloc[-m-1]-1>0)
+    else: tech[t]=True
+rank['price_now']=rank['ticker'].map({t:x[0] for t,x in features.items()}); rank['trend_confirm']=rank['ticker'].map({t:x[1] for t,x in features.items()}).fillna(False); rank['relative_strength_6m_final']=rank['ticker'].map({t:x[2] for t,x in features.items()}); rank['entry_watch_low']=rank['ticker'].map({t:x[3] for t,x in features.items()}); rank['entry_watch_high']=rank['ticker'].map({t:x[4] for t,x in features.items()}); rank['vectorbt_current_confirm']=rank['ticker'].map(tech).fillna(False)
+regime=50.0
+if len(ib)>=200: regime+=20 if ib.iloc[-1]>ib.tail(200).mean() else -20
+if len(vix): regime+=10 if vix.iloc[-1]<20 else (-15 if vix.iloc[-1]>30 else 0)
 if len(usd)>=64:
-    r=usd.iloc[-1]/usd.iloc[-64]-1
-    regime_score += -10 if r>.08 else (5 if r<-.05 else 0)
-regime_score=float(np.clip(regime_score,0,100))
-regime="RISK_ON" if regime_score>=65 else ("RISK_OFF" if regime_score<=40 else "NEUTRAL")
-
-# Lightweight news risk only for top 30 calibrated candidates.
-NEG=["fraud","fraude","investigation","investigação","default","bankruptcy","recuperação judicial",
-     "downgrade","loss warning","guidance cut","multa","corruption","corrupção"]
-rank["news_risk"]=False
-rank["news_headlines"]=""
-for idx in rank.sort_values("calibrated_score",ascending=False).head(30).index:
-    q=str(rank.at[idx,"company_name"]) if "company_name" in rank.columns else str(rank.at[idx,"ticker"])
+    r=usd.iloc[-1]/usd.iloc[-64]-1; regime+=-10 if r>.08 else (5 if r<-.05 else 0)
+regime=float(np.clip(regime,0,100)); market='RISK_ON' if regime>=65 else ('RISK_OFF' if regime<=40 else 'NEUTRAL')
+NEG=['fraud','fraude','investigation','investigação','default','bankruptcy','recuperação judicial','downgrade','loss warning','guidance cut','multa','corruption','corrupção']; rank['news_risk']=False; rank['news_headlines']=''
+for idx in rank.sort_values('validated_score',ascending=False).head(30).index:
+    q=str(rank.at[idx,'company_name']) if 'company_name' in rank.columns else str(rank.at[idx,'ticker'])
     try:
-        sr=yf.Search(q,news_count=8)
-        titles=[]
-        for item in getattr(sr,"news",[]) or []:
-            c=item.get("content") if isinstance(item,dict) else None
-            title=(c.get("title") if isinstance(c,dict) else item.get("title","")) if isinstance(item,dict) else ""
+        sr=yf.Search(q,news_count=8); titles=[]
+        for item in getattr(sr,'news',[]) or []:
+            if not isinstance(item,dict):continue
+            c=item.get('content'); title=str(c.get('title') or '') if isinstance(c,dict) else str(item.get('title') or '')
             if title:titles.append(title)
-        txt=" | ".join(titles).lower()
-        rank.at[idx,"news_risk"]=any(k in txt for k in NEG)
-        rank.at[idx,"news_headlines"]=" || ".join(titles[:4])
-    except Exception:
-        pass
+        txt=' | '.join(titles).lower(); rank.at[idx,'news_risk']=any(k in txt for k in NEG); rank.at[idx,'news_headlines']=' || '.join(titles[:4])
+    except Exception:pass
 
-# Gates
-def num(r,c,default=0):
+def num(r,c,d=0):
     try:
-        v=float(r.get(c,default));return v if np.isfinite(v) else default
-    except:return default
+        v=float(r.get(c,d)); return v if np.isfinite(v) else d
+    except:return d
 
 def decide(r):
-    gates={
-        "calibration":calibration_ok,
-        "data":str(r.get("data_quality","OK"))=="OK",
-        "base_score":num(r,"calibrated_score")>=72,
-        "quality":num(r,"quality_score")>=65,
-        "valuation":num(r,"valuation_score")>=55,
-        "momentum":num(r,"momentum_score")>=55,
-        "risk":num(r,"risk_score")>=45,
-        "technical": bool(r.get("technical_confirm",False)) if vb_ok else True,
-        "market":regime!="RISK_OFF",
-        "news":not bool(r.get("news_risk",False)),
-    }
-    passed=sum(gates.values()); total=len(gates)
-    confidence=.70*num(r,"calibrated_score")+.20*(100*passed/total)+.10*regime_score
-
-    # Strong means validated calibration must exist; no "strong" from unvalidated fixed weights.
-    if calibration_ok and passed>=9 and confidence>=80 and num(r,"calibrated_score")>=78:
-        signal="COMPRA_FORTE"
-    elif calibration_ok and passed>=8 and confidence>=73:
-        signal="AVALIAR_COMPRA"
-    elif num(r,"calibrated_score")>=68:
-        signal="WATCHLIST"
-    else:
-        signal="AGUARDAR"
-
-    return pd.Series({
-        "final_confidence_score":float(np.clip(confidence,0,100)),
-        "final_signal":signal,
-        "gates_passed":passed,"gates_total":total,
-        "failed_gates":",".join([k for k,v in gates.items() if not v]),
-        "market_regime":regime,"market_regime_score":regime_score,
-        "calibration_validated":calibration_ok,
-        "vectorbt_validated":vb_ok,
-    })
-
-extra=rank.apply(decide,axis=1)
-rank=pd.concat([rank,extra],axis=1)
-rank=rank.sort_values("final_confidence_score",ascending=False)
-
-rank.to_csv(OUT/"final_signals.csv",index=False)
-strong=rank[rank["final_signal"].isin(["COMPRA_FORTE","AVALIAR_COMPRA"])]
-strong.to_csv(OUT/"final_opportunities.csv",index=False)
-
-status={
-    "market_regime":regime,"market_regime_score":regime_score,
-    "calibration_validated":calibration_ok,"vectorbt_validated":vb_ok,
-    "strong_buys":int((rank["final_signal"]=="COMPRA_FORTE").sum()),
-    "evaluate_buys":int((rank["final_signal"]=="AVALIAR_COMPRA").sum()),
-    "watchlist":int((rank["final_signal"]=="WATCHLIST").sum()),
-    "important":"final_confidence_score is an evidence score, not a probability of profit."
-}
-(OUT/"final_signal_status.json").write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding="utf-8")
-print(rank[["ticker","calibrated_score","final_confidence_score","final_signal","failed_gates"]].head(20).to_string(index=False))
+    gates={'validated_calibration':calibration,'data_quality':str(r.get('data_quality','OK'))=='OK','validated_score':num(r,'validated_score')>=74,'quality':num(r,'quality_score')>=65,'valuation':num(r,'valuation_score')>=55,'momentum':num(r,'momentum_score')>=55,'risk':num(r,'risk_score')>=45,'trend_relative_strength':bool(r.get('trend_confirm',False)),'vectorbt':bool(r.get('vectorbt_current_confirm',True)),'market':market!='RISK_OFF','news':not bool(r.get('news_risk',False))}
+    passed=sum(gates.values()); total=len(gates); conf=float(np.clip(.70*num(r,'validated_score')+.20*(100*passed/total)+.10*regime,0,100))
+    if calibration and passed>=10 and num(r,'validated_score')>=80 and conf>=82: sig='COMPRA_FORTE'
+    elif calibration and passed>=9 and num(r,'validated_score')>=74 and conf>=75: sig='AVALIAR_COMPRA'
+    elif num(r,'validated_score')>=68: sig='WATCHLIST'
+    else:sig='AGUARDAR'
+    return pd.Series({'final_confidence_score':conf,'final_signal':sig,'gates_passed':passed,'gates_total':total,'failed_gates':','.join(k for k,v in gates.items() if not v),'market_regime':market,'market_regime_score':regime,'calibration_validated':calibration,'vectorbt_validated':vectorbt_ok})
+rank=pd.concat([rank,rank.apply(decide,axis=1)],axis=1).sort_values('final_confidence_score',ascending=False); rank.to_csv(OUT/'final_signals.csv',index=False); rank[rank['final_signal'].isin(['COMPRA_FORTE','AVALIAR_COMPRA'])].to_csv(OUT/'final_opportunities.csv',index=False)
+status={'market_regime':market,'market_regime_score':regime,'calibration_validated':calibration,'vectorbt_validated':vectorbt_ok,'strong_buys':int((rank['final_signal']=='COMPRA_FORTE').sum()),'evaluate_buys':int((rank['final_signal']=='AVALIAR_COMPRA').sum()),'watchlist':int((rank['final_signal']=='WATCHLIST').sum()),'important':'final_confidence_score is an evidence score, not a probability of profit.'}
+(OUT/'final_signal_status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)); print(rank[['ticker','validated_score','final_confidence_score','final_signal','failed_gates']].head(25).to_string(index=False))
