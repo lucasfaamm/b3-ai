@@ -1,0 +1,158 @@
+{
+  "engine": "Qlib research pipeline + native LightGBM LGBMRanker",
+  "objective": "lambdarank",
+  "universe_with_history": 106,
+  "sample_frequency": "approximately weekly",
+  "horizons_trading_days": [
+    5,
+    20,
+    60
+  ],
+  "round_trip_cost_assumption": 0.002,
+  "validation_design": "3 expanding purged walk-forward folds per horizon; embargo scales with horizon; hyperparameters selected only on validation.",
+  "sector_control": "70% global rank + 30% within-sector rank; Top-K sector concentration cap.",
+  "benchmarks": [
+    "Ibovespa",
+    "CDI when BCB API is available",
+    "simple 126-day momentum Top10"
+  ],
+  "horizon_results": {
+    "5": {
+      "folds": 3,
+      "mean_test_ic": 0.002367471613637175,
+      "mean_test_ic_positive_rate": 0.48967320261437913,
+      "top_portfolios": {
+        "top5": {
+          "periods": 151,
+          "avg_stock_return": 0.0006509517108381026,
+          "avg_ibov_return": 0.0027438748077371826,
+          "avg_net_alpha_vs_ibov": -0.00409292309689908,
+          "positive_net_alpha_rate": 0.423841059602649,
+          "avg_net_excess_vs_cdi": -0.0037851148743465422
+        },
+        "top10": {
+          "periods": 151,
+          "avg_stock_return": 0.003004900626213142,
+          "avg_ibov_return": 0.0027438748077371826,
+          "avg_net_alpha_vs_ibov": -0.0017389741815240418,
+          "positive_net_alpha_rate": 0.4304635761589404,
+          "avg_net_excess_vs_cdi": -0.0014311659589715023
+        },
+        "top20": {
+          "periods": 151,
+          "avg_stock_return": 0.00235464805818487,
+          "avg_ibov_return": 0.0027438748077371826,
+          "avg_net_alpha_vs_ibov": -0.002389226749552313,
+          "positive_net_alpha_rate": 0.44370860927152317,
+          "avg_net_excess_vs_cdi": -0.002081418526999775
+        },
+        "top_decile": {
+          "periods": 151,
+          "avg_stock_return": 0.0032900061256251564,
+          "avg_ibov_return": 0.0027438748077371826,
+          "avg_net_alpha_vs_ibov": -0.0014538686821120265,
+          "positive_net_alpha_rate": 0.4503311258278146,
+          "avg_net_excess_vs_cdi": -0.0011460604595594883
+        }
+      },
+      "momentum_baseline_top10_net_alpha": -0.003577377098406388,
+      "accepted": false,
+      "acceptance_rule": "IC>0.03; Top10 net alpha>0.20%; hit-rate>=55%; beats 126d momentum baseline."
+    },
+    "20": {
+      "folds": 3,
+      "mean_test_ic": 0.07457992157151339,
+      "mean_test_ic_positive_rate": 0.6866666666666666,
+      "top_portfolios": {
+        "top5": {
+          "periods": 39,
+          "avg_stock_return": 0.010591880982427561,
+          "avg_ibov_return": 0.010332116749300372,
+          "avg_net_alpha_vs_ibov": -0.0017402357668728113,
+          "positive_net_alpha_rate": 0.46153846153846156,
+          "avg_net_excess_vs_cdi": -0.0011814860933195923
+        },
+        "top10": {
+          "periods": 39,
+          "avg_stock_return": 0.003775759460594803,
+          "avg_ibov_return": 0.010332116749300372,
+          "avg_net_alpha_vs_ibov": -0.008556357288705569,
+          "positive_net_alpha_rate": 0.46153846153846156,
+          "avg_net_excess_vs_cdi": -0.00799760761515235
+        },
+        "top20": {
+          "periods": 39,
+          "avg_stock_return": 0.00391167087462155,
+          "avg_ibov_return": 0.010332116749300372,
+          "avg_net_alpha_vs_ibov": -0.00842044587467882,
+          "positive_net_alpha_rate": 0.358974358974359,
+          "avg_net_excess_vs_cdi": -0.007861696201125602
+        },
+        "top_decile": {
+          "periods": 39,
+          "avg_stock_return": 0.00475092013168769,
+          "avg_ibov_return": 0.010332116749300372,
+          "avg_net_alpha_vs_ibov": -0.0075811966176126825,
+          "positive_net_alpha_rate": 0.48717948717948717,
+          "avg_net_excess_vs_cdi": -0.007022446944059463
+        }
+      },
+      "momentum_baseline_top10_net_alpha": -0.01046404274295195,
+      "accepted": false,
+      "acceptance_rule": "IC>0.03; Top10 net alpha>0.20%; hit-rate>=55%; beats 126d momentum baseline."
+    },
+    "60": {
+      "folds": 3,
+      "mean_test_ic": 0.13446604700514783,
+      "mean_test_ic_positive_rate": 0.8020124716553289,
+      "top_portfolios": {
+        "top5": {
+          "periods": 14,
+          "avg_stock_return": 0.008388055030559649,
+          "avg_ibov_return": 0.032090377559096536,
+          "avg_net_alpha_vs_ibov": -0.025702322528536888,
+          "positive_net_alpha_rate": 0.42857142857142855,
+          "avg_net_excess_vs_cdi": -0.023541320809672053
+        },
+        "top10": {
+          "periods": 14,
+          "avg_stock_return": 0.009617684256615508,
+          "avg_ibov_return": 0.032090377559096536,
+          "avg_net_alpha_vs_ibov": -0.02447269330248103,
+          "positive_net_alpha_rate": 0.42857142857142855,
+          "avg_net_excess_vs_cdi": -0.022311691583616185
+        },
+        "top20": {
+          "periods": 14,
+          "avg_stock_return": 0.0184089623137777,
+          "avg_ibov_return": 0.03209037755909653,
+          "avg_net_alpha_vs_ibov": -0.015681415245318835,
+          "positive_net_alpha_rate": 0.35714285714285715,
+          "avg_net_excess_vs_cdi": -0.013520413526454004
+        },
+        "top_decile": {
+          "periods": 14,
+          "avg_stock_return": 0.010512285702659939,
+          "avg_ibov_return": 0.032090377559096536,
+          "avg_net_alpha_vs_ibov": -0.0235780918564366,
+          "positive_net_alpha_rate": 0.2857142857142857,
+          "avg_net_excess_vs_cdi": -0.021417090137571763
+        }
+      },
+      "momentum_baseline_top10_net_alpha": -0.007078244849558308,
+      "accepted": false,
+      "acceptance_rule": "IC>0.03; Top10 net alpha>0.20%; hit-rate>=55%; beats 126d momentum baseline."
+    }
+  },
+  "accepted_horizons": [],
+  "ml_v2_status": "REJECTED",
+  "current_scored_stocks": 106,
+  "current_ml_confirms": 0,
+  "limitations": [
+    "Universe starts from currently listed companies, so survivorship bias remains.",
+    "Current sector classifications are reused historically.",
+    "Historical ML does not yet include point-in-time fundamentals.",
+    "Yahoo Finance is free/non-official and may contain gaps.",
+    "ML scores are relative ranks, not probabilities of profit."
+  ]
+}
