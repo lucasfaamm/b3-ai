@@ -1,11 +1,8 @@
 {
-  "universe_requested": 300,
-  "profiles_ok": 300,
-  "profile_errors": 0,
-  "cvm_matched": 203,
-  "cvm_unmatched": 97,
-  "dfp_year": 2025,
-  "previous_dfp_year": 2024,
-  "fundamental_source": "CVM DFP bulk",
-  "market_metadata_source": "brapi public tickers/profile"
+  "universe_requested": 200,
+  "fundamentals_ok": 197,
+  "errors": 3,
+  "fundamental_source": "Yahoo Finance",
+  "universe_source": "brapi public tickers",
+  "cvm_status": "not_used_in_github_runner"
 }
