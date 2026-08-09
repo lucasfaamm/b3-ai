@@ -1,0 +1,38 @@
+{
+  "period_start": "2024-11-04",
+  "period_end": "2026-08-07",
+  "best_parameters": {
+    "fast_ma": 20,
+    "slow_ma": 200,
+    "momentum_days": 252
+  },
+  "strategy": {
+    "days": 437,
+    "total_return": 0.08964245328853049,
+    "cagr": 0.05075185274564631,
+    "volatility": 0.10547173213563206,
+    "sharpe_rf0": 0.5221468080931343,
+    "max_drawdown": -0.10608268177817348
+  },
+  "ibov": {
+    "days": 437,
+    "total_return": 0.34648496343300517,
+    "cagr": 0.18714896268217074,
+    "volatility": 0.16867182548815382,
+    "sharpe_rf0": 1.1015900750791172,
+    "max_drawdown": -0.15292187035946414
+  },
+  "cdi": {
+    "days": 437,
+    "total_return": 0.25732889374920975,
+    "cagr": 0.14116411058248368,
+    "volatility": 0.0007283257293837902,
+    "sharpe_rf0": 181.35259170200334,
+    "max_drawdown": 0.0
+  },
+  "beats_ibov_cagr": false,
+  "beats_ibov_sharpe": false,
+  "beats_cdi_cagr": false,
+  "accepted_as_confirmation_engine": false,
+  "rule": "Accepted only if OOS CAGR and Sharpe beat IBOV and CAGR beats CDI when available."
+}

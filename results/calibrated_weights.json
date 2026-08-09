@@ -1,0 +1,85 @@
+{
+  "accepted": false,
+  "weights": {
+    "quality": 0.15929467435853756,
+    "growth": 0.23162384505617212,
+    "valuation": 0.49939231445473986,
+    "momentum": 0.03876728482127952,
+    "risk": 0.07092188130927084
+  },
+  "train": {
+    "months": 36,
+    "cagr": 0.17668663945609242,
+    "benchmark_cagr_max_ibov_cdi": 0.4021570779825059,
+    "ibov_cagr": 0.03266907293618537,
+    "cdi_cagr": 0.10178418933697331,
+    "avg_monthly_excess": -0.013151874922903088,
+    "positive_excess_rate": 0.3611111111111111,
+    "excess_sharpe": -0.8751664904151405,
+    "max_drawdown": -0.17072647878223923,
+    "ibov_max_drawdown": -0.22286714720587997,
+    "avg_turnover": 0.24722222222222212
+  },
+  "validation": {
+    "months": 14,
+    "cagr": 0.09418062413397466,
+    "benchmark_cagr_max_ibov_cdi": 0.2862727972670711,
+    "ibov_cagr": 0.016803823934360418,
+    "cdi_cagr": 0.11128368989541682,
+    "avg_monthly_excess": -0.012988346480373666,
+    "positive_excess_rate": 0.35714285714285715,
+    "excess_sharpe": -1.3825043625999534,
+    "max_drawdown": -0.11032268347903118,
+    "ibov_max_drawdown": -0.11559218846504538,
+    "avg_turnover": 0.32857142857142857
+  },
+  "untouched_test": {
+    "months": 17,
+    "cagr": 0.21910520995189509,
+    "benchmark_cagr_max_ibov_cdi": 0.4305458836422005,
+    "ibov_cagr": 0.2193411709376254,
+    "cdi_cagr": 0.13930025343165764,
+    "avg_monthly_excess": -0.01303930554703856,
+    "positive_excess_rate": 0.23529411764705882,
+    "excess_sharpe": -1.2032873652331666,
+    "max_drawdown": -0.10966254853519186,
+    "ibov_max_drawdown": -0.08879319020907162,
+    "avg_turnover": 0.21764705882352936
+  },
+  "default_weights_test": {
+    "months": 17,
+    "cagr": 0.24193350689014914,
+    "benchmark_cagr_max_ibov_cdi": 0.4305458836422005,
+    "ibov_cagr": 0.2193411709376254,
+    "cdi_cagr": 0.13930025343165764,
+    "avg_monthly_excess": -0.0115395347290597,
+    "positive_excess_rate": 0.35294117647058826,
+    "excess_sharpe": -1.1967036739313208,
+    "max_drawdown": -0.09072976410496936,
+    "ibov_max_drawdown": -0.08879319020907162,
+    "avg_turnover": 0.2823529411764706
+  },
+  "periods": {
+    "train": [
+      "2021-01-29",
+      "2023-12-28"
+    ],
+    "validation": [
+      "2024-01-31",
+      "2025-02-28"
+    ],
+    "untouched_test": [
+      "2025-03-31",
+      "2026-07-31"
+    ]
+  },
+  "fundamental_method": "CVM PIT by received_date; ITR YTD flows de-accumulated into calendar quarters; TTM=sum of four consecutive quarter flows.",
+  "portfolio_method": "Monthly equal-weight Top10; one most-liquid share class per CNPJ; price>=R$2; avg traded value>=R$1m/day; 20 bps turnover cost.",
+  "acceptance_rule": "Untouched test must beat IBOV CAGR, beat CDI CAGR when available, have positive avg excess, >=50% positive excess months, positive excess Sharpe, and max drawdown no worse than IBOV.",
+  "limitations": [
+    "Current observed issuer universe still causes survivorship bias.",
+    "Historical market cap approximates total reported shares times the most-liquid share-class price.",
+    "Non-calendar fiscal-year companies are excluded.",
+    "Yahoo Finance is free/non-official."
+  ]
+}

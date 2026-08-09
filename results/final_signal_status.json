@@ -1,0 +1,10 @@
+{
+  "market_regime": "RISK_OFF",
+  "market_regime_score": 40.0,
+  "calibration_validated": false,
+  "vectorbt_validated": false,
+  "strong_buys": 0,
+  "evaluate_buys": 0,
+  "watchlist": 10,
+  "important": "final_confidence_score is an evidence score, not a probability of profit."
+}
