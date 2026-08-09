@@ -1,0 +1,31 @@
+
+name: Qlib Rank Signal V4
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 16 * * 0"
+
+permissions:
+  contents: write
+
+jobs:
+  rank_signal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: pip install pyqlib
+      - name: Run V4 cross-sectional validation
+        run: python qlib_rank_signal_v4.py
+      - name: Commit V4 results
+        run: |
+          git config user.name "b3-ai-bot"
+          git config user.email "b3-ai-bot@users.noreply.github.com"
+          git add results/qlib_v4_*.csv results/qlib_v4_summary.json
+          git diff --cached --quiet || git commit -m "Update Qlib Rank Signal V4"
+          git push
