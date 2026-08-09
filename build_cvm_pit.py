@@ -47,21 +47,34 @@ cnpjs=set(mapping["cnpj"])
 if len(cnpjs)<30:
     raise SystemExit(f"Poucos CNPJs mapeados: {len(cnpjs)}")
 
-# ---------- CVM downloader; force IPv4 ----------
+# ---------- CVM downloader: optional Cloudflare bridge ----------
+CVM_PROXY_BASE=os.getenv("CVM_PROXY_BASE","").strip().rstrip("/")
+
 def download_zip(doc,year):
-    url=f"https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/{doc}/DADOS/{doc.lower()}_cia_aberta_{year}.zip"
+    doc=doc.upper()
+    if CVM_PROXY_BASE:
+        url=f"{CVM_PROXY_BASE}/{doc}/{year}.zip"
+        print(f"[CVM bridge] {doc} {year}",flush=True)
+    else:
+        url=f"https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/{doc}/DADOS/{doc.lower()}_cia_aberta_{year}.zip"
+        print(f"[CVM direct] {doc} {year}",flush=True)
     with tempfile.NamedTemporaryFile(suffix=".zip",delete=False) as tmp:
         path=tmp.name
     cmd=[
-        "curl","-4","-L","--fail","--silent","--show-error",
-        "--retry","6","--retry-all-errors","--retry-delay","5",
-        "--connect-timeout","30","--max-time","240",
+        "curl","-L","--fail","--silent","--show-error",
+        "--retry","5","--retry-all-errors","--retry-delay","3",
+        "--connect-timeout","30","--max-time","300",
         "-o",path,url
     ]
     try:
         subprocess.run(cmd,check=True)
+        if Path(path).stat().st_size < 1000:
+            raise RuntimeError(f"Arquivo muito pequeno: {url}")
         b=Path(path).read_bytes()
-        return ZipFile(BytesIO(b))
+        z=ZipFile(BytesIO(b))
+        if z.testzip() is not None:
+            raise RuntimeError(f"ZIP corrompido: {url}")
+        return z
     finally:
         try: os.remove(path)
         except OSError: pass
@@ -191,36 +204,40 @@ for doc in ["DFP","ITR"]:
         keep=[c for c in keep if c in wide.columns]
         rows.append(wide[keep])
 
+if not rows:
+    raise SystemExit(
+        "Nenhum arquivo CVM foi obtido. Confira CVM_PROXY_BASE e o Worker."
+    )
+
 pit=pd.concat(rows,ignore_index=True)
 pit=pit.dropna(subset=["cnpj","reference_date","received_date"])
 pit=pit.sort_values(["cnpj","reference_date","received_date","version"])
 pit=pit.drop_duplicates(["cnpj","reference_date","received_date"],keep="last")
 
-# Keep latest version available at each received date, then compute YoY on same quarter/reference month.
-pit["annual_factor"]=4/pit["quarter"].replace(0,np.nan)
-pit.loc[pit["document_type"].eq("DFP"),"annual_factor"]=1.0
-pit["revenue_annualized"]=pit["revenue"]*pit["annual_factor"]
-pit["operating_income_annualized"]=pit["operating_income"]*pit["annual_factor"]
-pit["net_income_annualized"]=pit["net_income"]*pit["annual_factor"]
+# IMPORTANT: ITR DRE values are YTD/cumulative. Keep them RAW here.
+# The next backtest will de-accumulate quarters and construct TTM using
+# only filings that were already received at each historical rebalance date.
+pit=pit.rename(columns={
+    "revenue":"revenue_ytd_or_annual",
+    "operating_income":"operating_income_ytd_or_annual",
+    "net_income":"net_income_ytd_or_annual",
+})
 
-prev=pit[["cnpj","reference_date","revenue","net_income"]].copy()
-prev["reference_date"]=prev["reference_date"]+pd.DateOffset(years=1)
-prev=prev.rename(columns={"revenue":"revenue_prev_year","net_income":"net_income_prev_year"})
-pit=pit.merge(prev,on=["cnpj","reference_date"],how="left")
-pit["revenue_growth_yoy"]=(pit["revenue"]-pit["revenue_prev_year"])/pit["revenue_prev_year"].abs().replace(0,np.nan)
-pit["earnings_growth_yoy"]=(pit["net_income"]-pit["net_income_prev_year"])/pit["net_income_prev_year"].abs().replace(0,np.nan)
-
-# Attach tickers. Multiple classes can map to same CNPJ.
+# Attach tickers. Multiple share classes can map to the same CNPJ.
 pit=pit.merge(mapping,on="cnpj",how="inner")
 pit.to_csv(OUT/"cvm_pit_fundamentals.csv.gz",index=False,compression="gzip")
 
 status={
-    "rows":int(len(pit)),"tickers":int(pit["ticker"].nunique()),
+    "rows":int(len(pit)),
+    "tickers":int(pit["ticker"].nunique()),
     "companies":int(pit["cnpj"].nunique()),
     "start_reference":str(pit["reference_date"].min().date()),
     "end_reference":str(pit["reference_date"].max().date()),
-    "source":"Official CVM DFP/ITR bulk files; availability uses DT_RECEB when present.",
-    "lookahead_control":"Only filings with received_date <= portfolio rebalance date are eligible."
+    "network_route":"cloudflare_worker" if CVM_PROXY_BASE else "direct_cvm",
+    "source":"Official CVM DFP/ITR bulk files; received_date preserved.",
+    "lookahead_control":"Only filings with received_date <= rebalance date may be used.",
+    "itr_policy":"ITR flow values are kept cumulative/YTD here; do NOT annualize by 4/q.",
+    "next_step":"Use corrected de-accumulation + TTM backtest; do not run the old research_final workflow."
 }
 (RES/"cvm_pit_status.json").write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding="utf-8")
 print(json.dumps(status,ensure_ascii=False,indent=2))
