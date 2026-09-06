@@ -1,7 +1,7 @@
 {
   "universe_requested": 200,
-  "fundamentals_ok": 195,
-  "errors": 5,
+  "fundamentals_ok": 198,
+  "errors": 2,
   "fundamental_source": "Yahoo Finance",
   "universe_source": "brapi public tickers",
   "cvm_status": "not_used_in_github_runner"
