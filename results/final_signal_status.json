@@ -3,8 +3,8 @@
   "market_regime_score": 80.0,
   "strong_buy_authorized": false,
   "strong_buys": 0,
-  "evaluate_buys": 4,
-  "watchlist": 10,
+  "evaluate_buys": 3,
+  "watchlist": 11,
   "deployed_weights": {
     "quality": 0.25,
     "growth": 0.2,
