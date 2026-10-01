@@ -4,7 +4,7 @@
   "strong_buy_authorized": false,
   "strong_buys": 0,
   "evaluate_buys": 3,
-  "watchlist": 12,
+  "watchlist": 11,
   "deployed_weights": {
     "quality": 0.25,
     "growth": 0.2,
@@ -14,6 +14,6 @@
   },
   "vectorbt_weight": 0,
   "qlib_weight": 0,
-  "forward_months_evaluated": 0,
+  "forward_months_evaluated": 2,
   "important": "Evidence score, not probability of profit. No automatic orders."
 }
