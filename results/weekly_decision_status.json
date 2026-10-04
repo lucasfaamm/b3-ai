@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-10-01T18:40:35.567550+00:00",
+  "updated_at": "2026-10-04T23:41:48.683876+00:00",
   "reanalyzed": 100,
-  "buy_now": 1,
-  "buy_only_up_to": 1,
-  "wait": 88,
+  "buy_now": 0,
+  "buy_only_up_to": 0,
+  "wait": 90,
   "do_not_buy": 10,
   "decision_rule": "Strict weekly multi-factor review + class-specific checks + price plan + portfolio concentration + news veto.",
   "risk_budget": "Suggested total position targets <=0.75% portfolio risk to quantitative invalidation, subject to class cap.",
