@@ -1,7 +1,7 @@
 {
-  "rows": 4234,
-  "tickers": 169,
-  "companies": 162,
+  "rows": 4942,
+  "tickers": 193,
+  "companies": 182,
   "start_reference": "2020-02-29",
   "end_reference": "2026-06-30",
   "network_route": "cloudflare_worker",

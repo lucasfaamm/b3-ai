@@ -1,1 +1,6 @@
-
+ticker,error
+ARML3,"HTTP 429: {""error"":true,""message"":""Limite de requisições simultâneas atingido. Aguarde uma requisição terminar."",""code"":""RATE_LIMITED"",""details"":{""concurrencyLimit"":1}}"
+CSED3,"HTTP 429: {""error"":true,""message"":""Limite de requisições simultâneas atingido. Aguarde uma requisição terminar."",""code"":""RATE_LIMITED"",""details"":{""concurrencyLimit"":1}}"
+SAPR11,"('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
+SANB11,"('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
+OBTC3,"HTTP 429: {""error"":true,""message"":""Limite de requisições simultâneas atingido. Aguarde uma requisição terminar."",""code"":""RATE_LIMITED"",""details"":{""concurrencyLimit"":1}}"
