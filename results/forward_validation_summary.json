@@ -1,23 +1,23 @@
 {
   "frozen_rule": "Top10 fixed weights 25/20/20/20/15; Qlib=0; VectorBT=0",
-  "new_forward_months_evaluated": 2,
-  "avg_alpha_vs_ibov_20d": -0.003338297617130304,
-  "positive_alpha_rate_vs_ibov": 0.5,
-  "avg_excess_vs_cdi_20d": 0.04883385396632237,
+  "new_forward_months_evaluated": 3,
+  "avg_alpha_vs_ibov_20d": -0.012554348431199019,
+  "positive_alpha_rate_vs_ibov": 0.3333333333333333,
+  "avg_excess_vs_cdi_20d": 0.04883385396632238,
   "positive_excess_rate_vs_cdi": 1.0,
   "bootstrap_alpha_vs_ibov": {
-    "n": 2,
-    "mean": -0.003338297617130304,
+    "n": 3,
+    "mean": -0.012554348431199019,
     "ci95_low": null,
     "ci95_high": null
   },
   "bootstrap_excess_vs_cdi": {
     "n": 2,
-    "mean": 0.04883385396632237,
+    "mean": 0.04883385396632238,
     "ci95_low": null,
     "ci95_high": null
   },
   "strong_buy_unlock": false,
   "unlock_rule": "24 NEW monthly observations plus positive mean/hit-rate and 95% bootstrap lower bound >0 versus both IBOV and CDI",
-  "updated_at": "2026-10-01T18:39:16.549632+00:00"
+  "updated_at": "2026-11-01T18:13:23.140344+00:00"
 }
